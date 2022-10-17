@@ -60,7 +60,6 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI);
 
-        // personToToken[msg.sender] = tokenURI;
         issuedTokens[msg.sender] = false;
 
         return newItemId;
