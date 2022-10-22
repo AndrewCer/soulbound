@@ -80,8 +80,20 @@ describe("Soulbound", function () {
   });
 
   describe("Claiming", function () {
-    it("Should only allow issued tokens to be claimed by respective accounts", async function () {
+    // https://storage.googleapis.com/external-testing/eth-sf.json
+    it("Should only allow issued tokens to be claimed by accounts that were issued to", async function () {
+      const { soulbound, addr1, addr2 } = await loadFixture(deploySoulboundFixture);
 
+      // Issuer sets recievers address
+      await soulbound.issueToken(addr2.address);
+      await soulbound.connect(addr2).claimToken('https://storage.googleapis.com/external-testing/eth-sf.json');
+      await soulbound.issueToken(addr2.address);
+      await soulbound.connect(addr2).claimToken('https://storage.googleapis.com/external-testing/eth-sf.json');
+      // Connect as the reciever to claim token
+      await soulbound.issueToken(addr2.address);
+
+      await expect(soulbound.connect(addr1).claimToken('https://storage.googleapis.com/external-testing/eth-sf.json')).to.be.revertedWith('Token is not issued');
+      await expect(soulbound.connect(addr2).claimToken('https://storage.googleapis.com/external-testing/eth-sf.json')).to.emit(soulbound, 'ClaimToken').withArgs(addr2.address, 3);
     });
   });
 
@@ -92,17 +104,17 @@ describe("Soulbound", function () {
     });
     describe("OwnerOnly", function () {
       it("Should only burn if owner requests it", async function () {
-  
+
       });
     });
     describe("Both", function () {
       it("Should burn for either owner or issuer", async function () {
-  
+
       });
     });
     describe("Neither", function () {
       it("Should never burn", async function () {
-  
+
       });
     });
   });
