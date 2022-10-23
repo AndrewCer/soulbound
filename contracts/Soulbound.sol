@@ -32,19 +32,18 @@ contract Soulbound is ERC721URIStorage, Ownable {
         string uri;
     }
 
-    struct Receiver {
-        // TODO(nocs): sort out email logic
-        string email;
-        bool issued;
-    }
-
     using Counters for Counters.Counter;
     Counters.Counter private _eventIds;
     Counters.Counter private _tokenIds;
     uint256 private _limitMax = 10000;
 
-    // Event Id => address => Receiver
-    mapping(uint256 => mapping(address => Receiver)) public issuedTokens;
+    // Issued tokens by email
+    // hash of code => Event Id
+    mapping(bytes32 => uint256) public issuedEmailTokens;
+
+    // Issued tokens by address
+    // Event Id => address => Bool
+    mapping(uint256 => mapping(address => bool)) public issuedTokens;
     // Event Id => Token
     mapping(uint256 => Token) public createdTokens;
 
@@ -75,7 +74,7 @@ contract Soulbound is ERC721URIStorage, Ownable {
         address ,//to,
         uint256 //tokenId
     ) public pure override {
-        revert("This token is soulbound and cannot be transfered!");
+        revert("This token is soulbound and cannot be transfered");
     }
 
     function safeTransferFrom(
@@ -83,7 +82,7 @@ contract Soulbound is ERC721URIStorage, Ownable {
         address ,//to,
         uint256 //tokenId
     ) public pure override {
-        revert("This token is soulbound and cannot be transfered!");
+        revert("This token is soulbound and cannot be transfered");
     }
 
     function safeTransferFrom(
@@ -92,11 +91,13 @@ contract Soulbound is ERC721URIStorage, Ownable {
         uint256 ,//tokenId,
         bytes memory //_data
     ) public pure override {
-        revert("This token is soulbound and cannot be transfered!");
+        revert("This token is soulbound and cannot be transfered");
     }
 
     // Non pre-issued tokens with limit
     function createToken(string memory tokenURI, uint256 limit, BurnAuth _burnAuth) public {
+        require(limit <= _limitMax, "Reduce limit");
+
         _eventIds.increment();
         uint256 eventId = _eventIds.current();
 
@@ -107,31 +108,40 @@ contract Soulbound is ERC721URIStorage, Ownable {
         createdTokens[eventId].burnAuth = _burnAuth;
     }
 
-    // Pre-issued token
-    function createToken(string memory tokenURI, address to, BurnAuth _burnAuth) public {
-        _eventIds.increment();
-        uint256 eventId = _eventIds.current();
-
-        createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = tokenURI;
-        issuedTokens[eventId][to].issued = true;
-        createdTokens[eventId].restricted = true;
-        createdTokens[eventId].burnAuth = _burnAuth;
-    }
-
     // Pre-issued tokens
     function createToken(string memory tokenURI, address[] memory to, BurnAuth _burnAuth) public {
+        require(to.length > 0, "Requires receiver array");
+
         _eventIds.increment();
         uint256 eventId = _eventIds.current();
 
         createdTokens[eventId].owner = msg.sender;
         createdTokens[eventId].uri = tokenURI;
 
-        for (uint256 i = 0; i < to.length; ++i) {
-            issuedTokens[eventId][to[i]].issued = true;
-        }
         createdTokens[eventId].restricted = true;
         createdTokens[eventId].burnAuth = _burnAuth;
+
+        for (uint256 i = 0; i < to.length; ++i) {
+            issuedTokens[eventId][to[i]] = true;
+        }
+    }
+
+    // Pre-issued tokens from email
+    function createTokenFromEmails(string memory tokenURI, bytes32[] memory to, BurnAuth _burnAuth) public {
+        require(to.length > 0, "Requires receiver array");
+
+        _eventIds.increment();
+        uint256 eventId = _eventIds.current();
+
+        createdTokens[eventId].owner = msg.sender;
+        createdTokens[eventId].uri = tokenURI;
+
+        createdTokens[eventId].restricted = true;
+        createdTokens[eventId].burnAuth = _burnAuth;
+
+        for (uint256 i = 0; i < to.length; ++i) {
+            issuedEmailTokens[to[i]] = eventId;
+        }
     }
 
     // Mint tokens
@@ -154,9 +164,9 @@ contract Soulbound is ERC721URIStorage, Ownable {
     // Mint issued token
     function claimIssuedToken(uint256 eventId) public returns (uint256) {
         require(createdTokens[eventId].restricted, "Not a restricted token");
-        require(issuedTokens[eventId][msg.sender].issued, "Token must be issued to you");
+        require(issuedTokens[eventId][msg.sender], "Token must be issued to you");
 
-        issuedTokens[eventId][msg.sender].issued = false;
+        issuedTokens[eventId][msg.sender] = false;
         createdTokens[eventId].count += 1;
 
         _tokenIds.increment();
@@ -164,6 +174,26 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, createdTokens[eventId].uri);
 
+
+        emit ClaimToken(msg.sender, tokenId);
+
+        return tokenId;
+    }
+
+    // Mint issued token by email
+    // TODO(nocs): maybe make the verbiage of this more generic? Instead of "email" simply use "code"?
+    function claimIssuedTokenFromEmail(uint256 eventId, bytes32 code) public returns (uint256) {
+        require(createdTokens[eventId].restricted, "Not a restricted token");
+        require(issuedEmailTokens[code] == eventId, "Token must be issued to you");
+
+        delete issuedEmailTokens[code];
+
+        createdTokens[eventId].count += 1;
+
+        _tokenIds.increment();
+        uint256 tokenId = _tokenIds.current();
+        _mint(msg.sender, tokenId);
+        _setTokenURI(tokenId, createdTokens[eventId].uri);
 
         emit ClaimToken(msg.sender, tokenId);
 
