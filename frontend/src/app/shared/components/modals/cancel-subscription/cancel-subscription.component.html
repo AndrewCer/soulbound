@@ -1,0 +1,25 @@
+<button class="close" mat-button *ngIf="!submitting">
+    <mat-icon mat-dialog-close>close</mat-icon>
+</button>
+
+<h1 mat-dialog-title>Cancel Subscription</h1>
+<div class="mb-2">Sad to see you go 😔</div>
+<div class="mb-2">Thanks for using Syfted!</div>
+<div class="mb-2">Send any feedback to: feedback@syfted.ai</div>
+<span><b>NOTE:</b> You will remain a <b>{{stringFormatterService.membershipText(user.membership)}} Member</b> until <i>{{user.membershipGranted * 1000 | date:'MM/dd/yyyy'}}</i>. After that, you will revert to a free member and lose any subscription member points you have accrued. If you have any bonus points, they won't be lost.</span>
+<div mat-dialog-actions class="modal-actions">
+    <button class="btn btn-lg btn-light" [disabled]="submitting" (click)="confirmCancel()">
+        <ng-container *ngIf="!submitting">
+            Confirm Cancellation
+        </ng-container>
+        <ng-container *ngIf="submitting">
+            <span class="spinner-grow spinner-grow-sm" role="status"
+                aria-hidden="true"></span>
+            Sending...
+        </ng-container>
+        
+    </button>
+    <button class="btn btn-lg btn-primary text-white" [disabled]="submitting" mat-dialog-close>
+        Go Back
+    </button>
+</div>

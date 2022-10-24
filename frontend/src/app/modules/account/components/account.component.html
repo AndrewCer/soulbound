@@ -1,0 +1,98 @@
+<app-page-header [title]="'Account'"></app-page-header>
+
+<div class="row" *ngIf="user">
+    <div class="col-xl-6 col-12">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="tx-15 font-weight-semibold mb-0">{{user.email}}</h6>
+                                <span class="dropdown-title-text subtext op-6  tx-12">
+                                    Beta Member</span>
+                                <i *ngIf="user.membershipExpires">: Expires {{user.membershipExpires * 1000 |
+                                    date:'MM/dd/yyyy'}}</i>
+                                <div class="d-flex justify-content-between">
+                                    <p>Points remaining</p>
+                                    <p *ngIf="user && user.membership !== 2"><span [ngClass]="{'text-warning': user.credits + user.creditsBonus <= 3,
+                                                'text-danger': user.credits + user.creditsBonus <= 2}">{{user.credits}}</span> / <span
+                                            *ngIf="user.membership === 0">{{monthlyMaxFree}}</span> <span
+                                            *ngIf="user.membership === 1">{{monthlyMaxDavinci}}</span>
+                                    </p>
+                                    <p *ngIf="user && user.membership === 2">
+                                        <mat-icon class="text-primary"
+                                            matTooltip="As a Pro member, you have unlimited points!"
+                                            aria-label="Ininity symbol that dislpays a tooltip when hovered over">
+                                            all_inclusive</mat-icon>
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-end"
+                                    *ngIf="user.creditsBonus && user.membership !== 2">
+                                    <p>+{{user.creditsBonus}} bonus point{{user.creditsBonus === 1 ? '' : 's'}}</p>
+                                </div>
+                                <div class="progress" *ngIf="user">
+                                    <ng-container *ngIf="user.membership !== 2">
+                                        <div class="progress-bar"
+                                            [ngClass]="{'bg-warning': user.credits + user.creditsBonus <= 3, 'bg-danger': user.credits + user.creditsBonus <= 2}"
+                                            role="progressbar" [style]="{'width': progressBar + '%'}"
+                                            [attr.aria-valuenow]="progressBar" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="user.membership === 2">
+                                        <div class="progress-bar" role="progressbar" [style]="{'width': '100%'}"
+                                            [attr.aria-valuenow]="'100'" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </ng-container>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-1">
+                                    <p>Points refresh on:</p>
+                                    <p>{{renewal | date}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="app-note" *ngIf="user && user.credits + user.creditsBonus > 3">
+    <p>
+        Hi 👋
+    </p>
+    <p>Thanks for using <span class="flavor-semicolon text-primary">S</span>yfted!</p>
+    <p>If you have any questions or feedback, please reach out to us at <a class="text-primary"
+        href="mailto:support@syfted.ai">support@syfted.ai</a>.</p>
+</div>
+
+<div class="app-note" *ngIf="user && user.credits + user.creditsBonus <= 3">
+    <p>
+        Hi 👋
+    </p>
+    <p>We're glad you're enjoying <span class="flavor-semicolon text-primary">S</span>yfted!</p>
+    <p>We feel your pain, you want to keep getting awesome AI-generated summaries but don't have enough points. What
+        gives?</p>
+    <h4>Details on why we are limiting points for right now:</h4>
+    <p>
+        We are enabling restrictions to ensure that everyone has a chance to try out this new
+        amazing technology as we scale and increase the quota of our AI. We are working diligently on both of these fronts. Having more people use our app helps
+        tremendously with that effort, so thanks! We appreciate your patience and understanding as we work on reducing
+        restrictions.
+    </p>
+    <p>Sometimes though, you just can't wait and you need more <span class="flavor-semicolon text-primary">S</span>yfted points
+        right now! If you anticipate regular usage of <span class="flavor-semicolon text-primary">S</span>yfted, please
+        reach out to <a class="text-primary"
+            href="mailto:accounts@syfted.ai?subject=Requesting More Points">accounts@syfted.ai</a>. Include how you're
+        looking to use <span class="flavor-semicolon text-primary">S</span>yfted and how often you'd use it! We'd be happy to work on unlocking more points for you.</p>
+
+    <p>Thanks!</p>
+
+    <span>
+        - ❤️ <span style="margin-left: 5px;"><span class="flavor-semicolon text-primary">S</span>yfted Team</span>
+    </span>
+</div>

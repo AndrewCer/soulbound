@@ -1,0 +1,40 @@
+<button class="close" mat-button *ngIf="!submitting">
+    <mat-icon mat-dialog-close>close</mat-icon>
+</button>
+
+<h1 mat-dialog-title>Update Subscription</h1>
+<h4>Current plan:</h4>
+<div class="mb-2"><b>Billed: </b> ${{getPrice(user.membership, user.paymentFrequency)}} {{user.paymentFrequency === 1 ? 'Monthly' : 'Yearly'}}</div>
+<div class="mb-2"><b>Membership: </b> {{stringFormatterService.membershipText(user.membership)}} Member</div>
+<div class="mb-2"><b>Next payment on: </b> {{user.membershipGranted * 1000 | date:'MM/dd/yyyy'}}</div>
+
+<h4 class="mt-4">New plan:</h4>
+<div class="mb-2"><b>Billed: </b> ${{getPrice(parentData.membership, parentData.paymentFrequency)}} {{parentData.paymentFrequency === 1 ? 'Monthly' : 'Yearly'}}<span *ngIf="user.paymentFrequency !== parentData.paymentFrequency">*</span></div>
+<div class="mb-2"><b>Membership: </b> {{stringFormatterService.membershipText(parentData.membership)}} Member</div>
+<div class="mb-2"><b>Next payment on: </b> 
+    <ng-container *ngIf="user.paymentFrequency === parentData.paymentFrequency">
+        {{user.membershipGranted * 1000 | date:'MM/dd/yyyy'}}
+    </ng-container>
+    <ng-container *ngIf="user.paymentFrequency !== parentData.paymentFrequency">
+        Today {{currentDate| date:'MM/dd/yyyy'}} and then {{parentData.paymentFrequency === 1 ? 'Monthly' : 'Yearly'}} on the same day.
+    </ng-container>
+</div>
+<div>
+    <span *ngIf="user.membership === parentData.membership">*This will be prorated based on how much your old subscription cost and how many days into the cycle you are.</span>
+</div>
+<div class="mt-4">
+    <span><b>NOTE:</b> By clicking confirm, you agree to have us charge the card we have on file for this new membership.</span>
+</div>
+<div mat-dialog-actions class="modal-actions">
+    <button class="btn btn-lg btn-block btn-primary text-white" [disabled]="submitting" (click)="confirm()">
+        <ng-container *ngIf="!submitting">
+            Confirm
+        </ng-container>
+        <ng-container *ngIf="submitting">
+            <span class="spinner-grow spinner-grow-sm" role="status"
+                aria-hidden="true"></span>
+            Sending...
+        </ng-container>
+        
+    </button>
+</div>

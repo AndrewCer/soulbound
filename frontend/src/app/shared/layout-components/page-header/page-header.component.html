@@ -1,0 +1,17 @@
+<!-- Back button -->
+<div class="breadcrumb-header justify-content-between" *ngIf="backButton">
+    <div class="left-content justify-content-center mt-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item tx-15" *ngFor="let item of items" (click)="breadcrumbClicked(item)"><a href="javascript:;">{{item}}</a></li>
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+            <li class="breadcrumb-item active" aria-current="page">{{active_item}}</li>
+        </ol>
+    </div>
+</div>
+
+<!-- Default header -->
+<!-- breadcrumb -->
+<div class="breadcrumb-header justify-content-between" *ngIf="!backButton">
+
+</div>
+<!-- /breadcrumb -->

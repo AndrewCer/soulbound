@@ -1,0 +1,21 @@
+<button class="close" mat-button *ngIf="!submitting">
+    <mat-icon mat-dialog-close>close</mat-icon>
+</button>
+
+<h1 mat-dialog-title>Undo Cancellation</h1>
+<div class="mb-2">We get it, mistakes happen.</div>
+<div class="mb-2">Click the button below to continue your subscription as normal.</div>
+<span *ngIf="user.membershipExpires"><b>NOTE:</b> You are agreeing to continue your {{stringFormatterService.membershipText(user.membership)}} Member subscription. Your billing cycle with remain the same as it was before. Your next payment will happen automatically on <i>{{user.membershipExpires * 1000 | date:'MM/dd/yyyy'}}</i>.</span>
+<div mat-dialog-actions class="modal-actions">
+    <button class="btn btn-lg btn-block btn-primary text-white" [disabled]="submitting" (click)="confirm()">
+        <ng-container *ngIf="!submitting">
+            Confirm
+        </ng-container>
+        <ng-container *ngIf="submitting">
+            <span class="spinner-grow spinner-grow-sm" role="status"
+                aria-hidden="true"></span>
+            Sending...
+        </ng-container>
+        
+    </button>
+</div>

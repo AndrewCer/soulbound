@@ -1,0 +1,216 @@
+<app-page-header *ngIf="!user" [title]="'PRICING'"></app-page-header>
+
+<div class="price-toggle mb-4">
+  <span [ngClass]="{'text-muted': yearlyToggle}">Pay Monthly</span>
+  <mat-slide-toggle [(ngModel)]="yearlyToggle"></mat-slide-toggle> <span [ngClass]="{'text-muted': !yearlyToggle}">Pay
+    Annually</span>
+</div>
+
+<!--row-->
+<div class="row d-flex align-items-center justify-content-center">
+  <div class="col-xl-4 col-12 card-wrapper">
+    <div class="card p-3 pricing-card">
+      <div class="card-header text-justified pt-2">
+        <p class="tx-18 font-weight-semibold mb-1">Free</p>
+        <p class="text-justify font-weight-semibold mb-1"> <span class="tx-30 me-2">$</span><span
+            class="tx-30 me-1">0</span></p>
+        <p class="tx-13 mb-1">Ideal for small documents</p>
+        <p class="tx-13 mb-1 text-muted font-weight-">No Credit Card Required!</p>
+      </div>
+      <div class="card-body pt-2 pricing-content">
+
+        <ul class="text-justify pricing-body text-muted ps-0" *ngIf="user"
+          [ngClass]="{'text-muted': user.membership === 0}">
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              5 points per month
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              5 bonus points per referral*
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              5 bonus points for first month
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              1000 words per request
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer text-center border-top-0 pt-1" *ngIf="user && !user.membershipExpires">
+        <button class="btn btn-lg btn-primary text-white btn-block" [disabled]="user.membership === 0"
+          (click)="cancelSubscription()">
+          <span class="ms-4 me-4" *ngIf="user.membership === 0">Current Plan</span>
+          <span class="ms-4 me-4" *ngIf="user.membership !== 0">Downgrade</span>
+        </button>
+      </div>
+      <span class="pointer mt-3" *ngIf="user && user.membershipExpires">Begins {{user.membershipExpires * 1000 |
+        date:'MM/dd/yyyy'}}</span>
+    </div>
+  </div>
+  <div class="col-xl-4 col-12 card-wrapper">
+    <div class="card p-3 border-primary pricing-card">
+      <div class="card-header text-justified pt-2">
+        <p class="tx-18 font-weight-semibold mb-1 pe-0">
+          Davinci
+          <span class=" tx-11 float-end badge bg-primary text-white px-2 py-1 rounded-pill mt-2"
+            *ngIf="user && user.membership === 0">Most Popular</span>
+          <span class=" tx-11 float-end badge bg-primary text-white px-2 py-1 rounded-pill mt-2"
+            *ngIf="user && user.membership === 1 && isCurrentPlan()">Current plan</span>
+        </p>
+        <p class="text-justify font-weight-semibold mb-1">
+          <span class="tx-30 me-2">$</span>
+          <span class="tx-30 me-1" *ngIf="yearlyToggle">9</span>
+          <span class="tx-30 me-1" *ngIf="!yearlyToggle">18</span>
+          <span class="tx-24"><span class="op-5 text-muted tx-20">/</span> month</span>
+        </p>
+        <p class="tx-13 mb-2">Process up to 25k words a month</p>
+        <div class="tx-13 mb-1 text-muted font-weight-">
+          <ng-container *ngIf="yearlyToggle">
+            $108 Billed Yearly
+          </ng-container>
+          <ng-container *ngIf="!yearlyToggle">
+            Billed Monthly
+          </ng-container>
+        </div>
+      </div>
+      <div class="card-body pt-2 pricing-content">
+        <ul class="text-justify pricing-body text-muted ps-0" *ngIf="user"
+          [ngClass]="{'text-muted': user.membership === 1}">
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon> 
+            <p class="col-12">
+              Access past Syfts
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon> 
+            <p class="col-12">
+              50 points per month
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon> 
+            <p class="col-12">
+              5 bonus points per referral*
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon> 
+            <p class="col-12">
+              Early access to new features
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon> 
+            <p class="col-12">
+              Priority Support
+            </p>
+          </li>
+          <p>Plus new features coming soon:</p>
+          <li class="active mb-4">- Document upload</li>
+          <li class="active mb-4">- No word limit per request</li>
+        </ul>
+      </div>
+      <div class="card-footer text-center border-top-0 pt-1" *ngIf="user">
+        <button class="btn btn-lg btn-primary text-white btn-block" (click)="checkout(1)"
+          [disabled]="user.membership === 1 && isCurrentPlan()">
+          <span class="ms-4 me-4" *ngIf="user.membership === 0">Upgrade</span>
+          <span class="ms-4 me-4" *ngIf="user.membership === 1 && !isCurrentPlan()">Switch billing</span>
+          <span class="ms-4 me-4" *ngIf="user.membership === 1 && isCurrentPlan()">Current Plan</span>
+          <span class="ms-4 me-4" *ngIf="user.membership === 2">Downgrade</span>
+        </button>
+      </div>
+      <span class="text-primary pointer mt-3"
+        *ngIf="user && user.membership === 1 && isCurrentPlan() && !user.membershipExpires"
+        (click)="cancelSubscription()">Cancel subscription</span>
+      <ng-container *ngIf="user && user.membership === 1 && isCurrentPlan() && user.membershipExpires">
+        <span class="pointer mt-3"><i>Expires {{user.membershipExpires * 1000 |
+            date:'MM/dd/yyyy'}}</i></span>
+        <div class="text-primary pointer">
+          <b (click)="cancelSubscriptionUndo()">Undo Cancellation</b>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="col-xl-4 col-12 card-wrapper">
+    <div class="card p-3 pricing-card">
+      <div class="card-header text-justified pt-2">
+        <p class="tx-18 font-weight-semibold mb-1">Pro</p>
+        <p class="text-justify font-weight-semibold mb-1">
+          <span class="tx-30 me-2">$</span>
+          <span class="tx-30 me-1" *ngIf="yearlyToggle">35</span>
+          <span class="tx-30 me-1" *ngIf="!yearlyToggle">49</span>
+          <span class="tx-24"><span class="op-5 text-muted tx-20">/</span> month</span>
+        </p>
+        <p class="tx-13 mb-1">Unlimited word processing</p>
+        <p class="tx-13 mb-1 text-muted font-weight-">
+          <ng-container *ngIf="yearlyToggle">
+            $420 Billed Yearly
+          </ng-container>
+          <ng-container *ngIf="!yearlyToggle">
+            Billed Monthly
+          </ng-container>
+        </p>
+      </div>
+      <div class="card-body pt-2 pricing-content">
+        <ul class="text-justify pricing-body text-muted ps-0" *ngIf="user"
+          [ngClass]="{'text-muted': user.membership === 2}">
+          <li class="mb-2">All <b>Davinci</b> features, plus:</li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              <b>Unlimited points</b>
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              24/7 support
+            </p>
+          </li>
+          <li class="active mb-4">
+            <mat-icon class="text-primary">task_alt</mat-icon>
+            <p class="col-12">
+              Discount pricing for groups**
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer text-center border-top-0 pt-1" *ngIf="user">
+        <button class="btn btn-lg btn-primary text-white btn-block" (click)="checkout(2)"
+          [disabled]="user.membership === 2 && isCurrentPlan()">
+          <span class="ms-4 me-4" *ngIf="user.membership !== 2">Upgrade</span>
+          <span class="ms-4 me-4" *ngIf="user.membership === 2 && !isCurrentPlan()">Switch billing</span>
+          <span class="ms-4 me-4" *ngIf="user.membership === 2 && isCurrentPlan()">Current Plan</span>
+        </button>
+      </div>
+      <span class="text-primary pointer mt-3"
+        *ngIf="user && user.membership === 2 && isCurrentPlan() && !user.membershipExpires"
+        (click)="cancelSubscription()">Cancel subscription</span>
+      <ng-container *ngIf="user && user.membership === 2 && isCurrentPlan() && user.membershipExpires">
+        <span class="pointer mt-3"><i>Expires {{user.membershipExpires * 1000 |
+            date:'MM/dd/yyyy'}}</i></span>
+        <div class="text-primary pointer">
+          <b (click)="cancelSubscriptionUndo()">Undo Cancellation</b>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<!--/row-->
+
+<div class="mx-4 mt-5">
+  <p>*Referrals max out at 50 per user. A referred user is one that has subscribed to Syfted for at least one month.</p>
+  <p>**Please contact us at <a href="mailto:accounts@syfted.ai">accounts@syfted.ai</a> for group discount pricing</p>
+</div>

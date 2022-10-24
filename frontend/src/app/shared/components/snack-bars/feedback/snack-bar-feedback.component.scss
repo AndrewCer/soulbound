@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+
+    span {
+        display: flex;
+        align-items: center;
+    }
+
+    button {
+        margin-left: 10px;
+    }
+}
