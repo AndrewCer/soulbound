@@ -10,7 +10,7 @@ export class PageHeaderComponent implements OnChanges {
   @Input() items!: any[];
   @Input() active_item!: string;
 
-  @Output() breadcrumbClick = new EventEmitter<string>();
+  @Output() breadcrumbClick? = new EventEmitter<string>();
 
   public backButton = false;
 
@@ -23,7 +23,9 @@ export class PageHeaderComponent implements OnChanges {
   }
 
   public breadcrumbClicked(item: string) {
-    this.breadcrumbClick.emit(item);
+    if (this.breadcrumbClick) {
+      this.breadcrumbClick.emit(item);
+    }
   }
 
 }

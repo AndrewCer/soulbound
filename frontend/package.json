@@ -57,6 +57,7 @@
     "chartjs-plugin-datalabels": "^2.0.0",
     "date-fns": "^2.28.0",
     "echarts": "^5.3.1",
+    "ethers": "^5.7.2",
     "fullcalendar": "^5.10.2",
     "gulp": "^4.0.2",
     "gulp-beautify": "^3.0.0",

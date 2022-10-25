@@ -59,7 +59,11 @@
                   </svg></span>
               </a>
             </li>
-            <li ngbDropdown class="main-profile-menu nav nav-item nav-link ps-lg-2">
+            <li>
+              <button mat-button color="primary" *ngIf="walletAddress">{{stringFormatterService.truncateAddress(walletAddress)}}</button>
+              <button mat-button color="primary" (click)="connectClicked()" *ngIf="!walletAddress">Connect <mat-icon>account_balance_wallet</mat-icon></button>
+            </li>
+            <!-- <li ngbDropdown class="main-profile-menu nav nav-item nav-link ps-lg-2">
               <a class="new nav-link profile-user d-flex" href="javascript:;" ngbDropdownToggle>
                 <img alt="Default user profile image" src="./assets/img/faces/default-profile.png" class="">
               </a>
@@ -77,7 +81,7 @@
                 <a ngbDropdownItem class="pointer" (click)="signout()"><i
                     class="far fa-arrow-alt-circle-left text-danger"></i> Logout</a>
               </div>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>

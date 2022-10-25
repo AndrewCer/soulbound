@@ -1,5 +1,7 @@
 import { RateLimit } from "./rate-limit.model";
 
+import { ethers } from "ethers";
+
 export interface LocalStorageSnapshot extends Storage {
     /*
     * START: Theming
