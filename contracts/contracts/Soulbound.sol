@@ -5,6 +5,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Enums.sol";
@@ -20,8 +21,8 @@ import "hardhat/console.sol";
  * @dev Soulbound (aka non-transferable) ERC721 token with storage based token URI management.
  */
 //  TODO(nocs): validate if we need ERC721URIStorage aka tokenURI as we are already storing it manually.
-contract Soulbound is ERC721URIStorage, Ownable {
-    event ClaimToken(address, uint256);
+contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
+    event EventToken(uint256 eventId, uint256 tokenId);
 
     struct Token {
         BurnAuth burnAuth;
@@ -68,55 +69,29 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _;
     }
 
-    // Soulbind functionality
-    function transferFrom(
-        address ,//from,
-        address ,//to,
-        uint256 //tokenId
-    ) public pure override {
-        revert("This token is soulbound and cannot be transfered");
-    }
-
-    function safeTransferFrom(
-        address ,//from,
-        address ,//to,
-        uint256 //tokenId
-    ) public pure override {
-        revert("This token is soulbound and cannot be transfered");
-    }
-
-    function safeTransferFrom(
-        address ,//from,
-        address ,//to,
-        uint256 ,//tokenId,
-        bytes memory //_data
-    ) public pure override {
-        revert("This token is soulbound and cannot be transfered");
-    }
-
     // Non pre-issued tokens with limit
-    function createToken(string memory tokenURI, uint256 limit, BurnAuth _burnAuth) public {
+    function createToken(string memory _tokenURI, uint256 limit, BurnAuth _burnAuth) public {
         require(limit <= _limitMax, "Reduce limit");
 
         _eventIds.increment();
         uint256 eventId = _eventIds.current();
 
         createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = tokenURI;
+        createdTokens[eventId].uri = _tokenURI;
         createdTokens[eventId].limit = limit;
         createdTokens[eventId].restricted = false;
         createdTokens[eventId].burnAuth = _burnAuth;
     }
 
     // Pre-issued tokens
-    function createToken(string memory tokenURI, address[] memory to, BurnAuth _burnAuth) public {
+    function createToken(string memory _tokenURI, address[] memory to, BurnAuth _burnAuth) public {
         require(to.length > 0, "Requires receiver array");
 
         _eventIds.increment();
         uint256 eventId = _eventIds.current();
 
         createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = tokenURI;
+        createdTokens[eventId].uri = _tokenURI;
 
         createdTokens[eventId].restricted = true;
         createdTokens[eventId].burnAuth = _burnAuth;
@@ -127,14 +102,14 @@ contract Soulbound is ERC721URIStorage, Ownable {
     }
 
     // Pre-issued tokens from email
-    function createTokenFromEmails(string memory tokenURI, bytes32[] memory to, BurnAuth _burnAuth) public {
+    function createTokenFromEmails(string memory _tokenURI, bytes32[] memory to, BurnAuth _burnAuth) public {
         require(to.length > 0, "Requires receiver array");
 
         _eventIds.increment();
         uint256 eventId = _eventIds.current();
 
         createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = tokenURI;
+        createdTokens[eventId].uri = _tokenURI;
 
         createdTokens[eventId].restricted = true;
         createdTokens[eventId].burnAuth = _burnAuth;
@@ -156,7 +131,7 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, createdTokens[eventId].uri);
 
-        emit ClaimToken(msg.sender, tokenId);
+        emit EventToken(eventId, tokenId);
 
         return tokenId;
     }
@@ -174,8 +149,7 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, createdTokens[eventId].uri);
 
-
-        emit ClaimToken(msg.sender, tokenId);
+        emit EventToken(eventId, tokenId);
 
         return tokenId;
     }
@@ -195,7 +169,7 @@ contract Soulbound is ERC721URIStorage, Ownable {
         _mint(msg.sender, tokenId);
         _setTokenURI(tokenId, createdTokens[eventId].uri);
 
-        emit ClaimToken(msg.sender, tokenId);
+        emit EventToken(eventId, tokenId);
 
         return tokenId;
     }
@@ -209,5 +183,65 @@ contract Soulbound is ERC721URIStorage, Ownable {
 
     function burnToken(uint256 tokenId, uint256 eventId) public onlyBurnAuth(tokenId, eventId) {
         _burn(tokenId);
+    }
+
+    // Soulbound functionality
+    function transferFrom(
+        address ,//from,
+        address ,//to,
+        uint256 //tokenId
+    ) public pure override(ERC721,IERC721) {
+        revert("This token is soulbound and cannot be transfered");
+    }
+
+    function safeTransferFrom(
+        address ,//from,
+        address ,//to,
+        uint256 //tokenId
+    ) public pure override(ERC721,IERC721) {
+        revert("This token is soulbound and cannot be transfered");
+    }
+
+    function safeTransferFrom(
+        address ,//from,
+        address ,//to,
+        uint256 ,//tokenId,
+        bytes memory //_data
+    ) public pure override(ERC721,IERC721) {
+        revert("This token is soulbound and cannot be transfered");
+    }
+
+    // Required overrides from parent contracts
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function safeMint(address to, uint256 tokenId) public onlyOwner {
+        _mint(to, tokenId);
     }
 }
