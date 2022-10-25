@@ -18,7 +18,7 @@ export class WalletService {
         return this.$walletConnectionChanges.getValue();
     }
 
-    private contractAddress = '0x3aD6bB1D0E3B8ca9314C09166cC1791F9Ebf3F58';
+    private contractAddress = '0x53AdBe75c8E6aAF00418464F3EE9c11C7b8B2673';
     private sbtAbi = [
         'event Transfer(address indexed from, address indexed to, uint256 value)',
         // 'event Transfer(address from, address to, uint256 tokenId)',
@@ -37,13 +37,15 @@ export class WalletService {
         // Inherited
         'function owner() public view virtual returns (address)',
         'function balanceOf(address owner) public view virtual returns (uint256)',
+        'function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256)',
+        'function tokenURI(uint256 tokenId) public view virtual returns (string memory)',
     ];
     private iface = new ethers.utils.Interface(["event Transfer(address indexed from, address indexed to, uint256 value)"]);
     private contract: ethers.Contract;
     private provider: ethers.providers.Web3Provider;
     private signer: ethers.providers.JsonRpcSigner | undefined;
 
-    constructor() {        
+    constructor() {
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
         this.contract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider);
 
@@ -72,39 +74,10 @@ export class WalletService {
             await this.provider.send("eth_requestAccounts", []);
 
             this.walletConnectionChanges = WalletStatus.connected;
-
-
-            // console.log('we in here!');
-            // this.contract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider);
-
-            const contractClone = this.contract as any;
-            console.log('owner of contract', await contractClone.owner());
-            const sbtBalance = await contractClone.balanceOf(await this.getAddress());
-            console.log('balance of SBTs: ', sbtBalance.toString())
-
-            // const testing = this.contract.filters['Transfer'](null, '0x70a2d674cF9F503ac3cb45915Be248961128EF5f');
-            // console.log('testing in here: ', testing);
-
-            // const teeeeest = await this.contract.queryFilter(testing);
-            // console.log(teeeeest);
-
-
-            // try {
-            //     let events = await this.contract.queryFilter(testing);
-            //     console.log('events here: ', events);
-
-            // } catch (error) {
-            //     console.log('error: ', error);
-
-            // }
-
-            // this.contract.on(testing, (event: any) => {
-            //     console.log(event);
-            // });
-
-
+            return;
         } catch (error) {
             this.walletConnectionChanges = WalletStatus.error;
+            return;
         }
     }
 
@@ -121,6 +94,25 @@ export class WalletService {
         }
 
         return await this.signer.getAddress();
+    }
+
+    public async getTokenURIs(address: string): Promise<string[]> {
+            const contractFunctions = this.contract.functions;
+            const sbtBalance = await contractFunctions['balanceOf'](address);
+            console.log('balance of SBTs: ', sbtBalance.toString());
+
+            let tokenURIs: string[] = [];
+            for (let i = 0; i < sbtBalance; i++) {
+
+                const tokenId = (await contractFunctions['tokenOfOwnerByIndex'](address, i)).toString();
+                console.log('tokenID: ', tokenId);
+                
+
+                const tokenURI = (await contractFunctions['tokenURI'](tokenId))[0];
+                tokenURIs.push(tokenURI);
+            }            
+
+            return tokenURIs;
     }
 }
 

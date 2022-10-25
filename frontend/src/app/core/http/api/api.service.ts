@@ -24,7 +24,8 @@ export class ApiService {
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
         const options: any = { headers };
-        const url = environment.apiUrl + path;
+        // const url = environment.apiUrl + path;
+        const url = path;
 
         if (params && (method === 'get' || method === 'delete')) {
             let httpParams = new HttpParams();

@@ -4,6 +4,24 @@
     top: 0;
 }
 
+.gap-24 {
+    grid-gap: 24px;
+    gap: 24px;
+}
+
+// TODO(nocs): move this to a reusable location
+.card {
+    padding: 0;
+}
+
+.card img {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    width: 100%;
+    height: 25vw; // TODO(nocs): need to set media query to toggle this off when on small/medium screens
+    object-fit: cover;
+}
+
 .card-header-container {
     align-items: center;
     display: flex;

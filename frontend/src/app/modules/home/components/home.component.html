@@ -1,20 +1,16 @@
-<app-page-header [title]="'Home'" [items]="[]"
-    [active_item]="''">
+<app-page-header [title]="'Home'" [items]="[]" [active_item]="''">
 </app-page-header>
 
-<div class="row">
-    <div class="col-xl-12 col-12">
-        <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-xs-12">
-                <div class="card mb-3">
-                    <!-- <button class="absolute-close" *ngIf="!negativeFeedback.submitting" mat-icon-button
-                        aria-label="Close feedback input card" matTooltip="Close"
-                        (click)="negativeFeedback.displayTextBox = false;">
-                        <mat-icon>close</mat-icon>
-                    </button> -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 d-flex align-items-stretch" *ngFor="let token of tokens">
+            <div class="card" style="width: 18rem;">
+                <img [src]="token.image" [alt]="token.name">
+                <div class="card-body">
+                    <h5 class="card-title">{{token.name}}</h5>
+                    <p class="card-text">issued by XXX - XXX 2022</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-

@@ -3864,7 +3864,7 @@ dd {
     margin: 0;
 }
 
-.card-title:before {
+/* .card-title:before {
     content: "";
     width: 3px;
     height: 16px;
@@ -3873,7 +3873,7 @@ dd {
     left: 11px;
     display: block;
     top: 21px;
-}
+} */
 
 .card-title2:before {
     content: "";
