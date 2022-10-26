@@ -3,6 +3,7 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { TokenRequestService } from 'src/app/core/http/token/token-request.service';
 import { SBT } from 'src/app/shared/models/token.model';
 import { WalletStatus } from 'src/app/shared/models/wallet.model';
+import { StringFormatterService } from 'src/app/shared/services/string-formatter.service';
 import { WalletService } from 'src/app/shared/services/wallet.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class CollectionComponent implements OnDestroy {
     public tokens: SBT[] = [];
 
     constructor(
+        public stringFormatterService: StringFormatterService,
         private tokenRequestService: TokenRequestService,
         private walletService: WalletService,
     ) {

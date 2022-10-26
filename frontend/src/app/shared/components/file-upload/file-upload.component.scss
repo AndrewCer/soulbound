@@ -88,7 +88,7 @@ $clr-light-blue: rgb(171, 202, 255);
 }
 
 /* Drop Zoon */
-.upload-area__drop-zoon {
+.upload-area__drop-zone {
     position: relative;
     height: 11.25rem; /* 180px */
     display: flex;
@@ -101,19 +101,19 @@ $clr-light-blue: rgb(171, 202, 255);
     transition: border-color 300ms ease-in-out;
 }
 
-.upload-area__drop-zoon:hover {
+.upload-area__drop-zone:hover {
     border: 2px dashed var(--primary-bg-color);
     opacity: 1;
 }
 
-.drop-zoon__icon {
+.drop-zone__icon {
     display: flex;
     font-size: 3.75rem;
     color: var(--primary-bg-color);
     transition: opacity 300ms ease-in-out;
 }
 
-.drop-zoon__paragraph {
+.drop-zone__paragraph {
     font-size: 0.9375rem;
     color: $clr-light-gray;
     margin: 0;
@@ -121,12 +121,12 @@ $clr-light-blue: rgb(171, 202, 255);
     transition: opacity 300ms ease-in-out;
 }
 
-.drop-zoon:hover .drop-zoon__icon,
-.drop-zoon:hover .drop-zoon__paragraph {
+.drop-zone:hover .drop-zone__icon,
+.drop-zone:hover .drop-zone__paragraph {
     opacity: 0.8;
 }
 
-.drop-zoon__loading-text {
+.drop-zone__loading-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -136,7 +136,7 @@ $clr-light-blue: rgb(171, 202, 255);
     z-index: 10;
 }
 
-.drop-zoon__preview-image {
+.drop-zone__preview-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -150,26 +150,26 @@ $clr-light-blue: rgb(171, 202, 255);
     transition: opacity 300ms ease-in-out;
 }
 
-.drop-zoon:hover .drop-zoon__preview-image {
+.drop-zone:hover .drop-zone__preview-image {
     opacity: 0.8;
 }
 
-.drop-zoon__file-input {
+.drop-zone__file-input {
     display: none;
 }
 
-/* (drop-zoon--over) Modifier Class */
-.drop-zoon--over {
+/* (drop-zone--over) Modifier Class */
+.drop-zone--over {
     border-color: $clr-blue;
 }
 
-.drop-zoon--over .drop-zoon__icon,
-.drop-zoon--over .drop-zoon__paragraph {
+.drop-zone--over .drop-zone__icon,
+.drop-zone--over .drop-zone__paragraph {
     opacity: 0.7;
 }
 
-/* (drop-zoon--over) Modifier Class */
-.drop-zoon--Uploaded .drop-zoon__icon,
-.drop-zoon--Uploaded .drop-zoon__paragraph {
+/* (drop-zone--over) Modifier Class */
+.drop-zone--Uploaded .drop-zone__icon,
+.drop-zone--Uploaded .drop-zone__paragraph {
     display: none;
 }

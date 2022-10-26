@@ -17,6 +17,14 @@ export class StringFormatterService {
         return `${match[1]}…${match[2]}`;
     }
 
+    public truncateString(str: string, limit: number): string {
+        if (str.length > limit) {
+            return str.slice(0, limit) + "...";
+        } else {
+            return str;
+        }
+    }
+
     public membershipText(membership: Membership): string {
         let membershipText = 'Free';
         switch (membership) {

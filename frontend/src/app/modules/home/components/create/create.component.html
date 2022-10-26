@@ -1,0 +1,67 @@
+<div class="container">
+    <h1>Create SBT</h1>
+
+    <!-- <div class="row justify-content-center gap-4 mt-4">
+        <div class="card action-card" style="width: 18rem;">
+            <i class='bx bxs-pencil' style="font-size: 100px;"></i>
+            <div class="card-body">
+                <h5 class="card-title">SBT Wizard</h5>
+                <p class="card-text">Upload image, add attributes and create your SBT!</p>
+            </div>
+        </div>
+
+        <div class="card" style="width: 18rem;cursor: not-allowed;">
+            <i class='bx bxs-file' style="font-size: 100px;"></i>
+            <div class="card-body">
+                <h5 class="card-title">json file upload</h5>
+                <p class="card-text">Coming soon!</p>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="row row-sm">
+        <div class="col-lg-12 col-md-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <!-- TODO(nocs): take this form out of the card when on mobile -->
+                    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                        <div class="">
+                            <div class="row row-sm">
+                                <div class="col-lg-12 form-group">
+                                    <label class="form-label">Upload Image <span class="tx-danger">*</span>
+                                        <file-upload (fileSelected)="onImgSelected($event)"></file-upload>
+                                    </label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label class="form-label">Name: <span class="tx-danger">*</span>
+                                        <input class="form-control" formControlName="name" placeholder="Item name"
+                                            [attr.disabled]="submitting ? true : null"
+                                            [ngClass]="{'has-success': formControl['name'].valid}">
+                                    </label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label class="form-label">Description: <span class="tx-danger">*</span>
+                                        <textarea class="form-control col-xl-12 col-lg-12 col-md-12 col-xs-12"
+                                            placeholder="Detailed description about your SBT"
+                                            formControlName="description" [attr.disabled]="submitting ? true : null"
+                                            [ngClass]="{'has-success': formControl['description'].valid}"></textarea>
+                                    </label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label class="form-label">External link: <span class="tx-danger"></span>
+                                        <input class="form-control" formControlName="externalLink"
+                                            placeholder="Your sites URL" [attr.disabled]="submitting ? true : null"
+                                            [ngClass]="{'has-success': formControl['externalLink'].valid}">
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn ripple btn-primary btn-block"
+                                [disabled]="form.pristine || form.invalid">Validate Form</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

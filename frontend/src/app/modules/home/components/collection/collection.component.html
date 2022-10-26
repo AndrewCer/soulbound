@@ -1,11 +1,18 @@
-<div class="container">
-    <div class="row">
-        <div class="col-lg-4 d-flex align-items-stretch" *ngFor="let token of tokens">
-            <div class="card" style="width: 18rem;">
-                <img [src]="token.image" [alt]="token.name">
-                <div class="card-body">
-                    <h5 class="card-title">{{token.name}}</h5>
-                    <p class="card-text">issued by XXX - XXX 2022</p>
+<div id="cards_landscape_wrap-2">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3" *ngFor="let token of tokens">
+                <div class="card-flyer cursor-pointer">
+                    <div class="text-box">
+                        <div class="image-box">
+                            <img [src]="token.image" [alt]="token.name">
+                        </div>
+                        <div class="text-container">
+                            <h5 class="card-title">{{token.name}}</h5>
+                            <p>{{stringFormatterService.truncateString(token.description, 79)}}</p>
+                            <p class="text-muted card-footer">Issued by XX - XX22</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

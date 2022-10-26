@@ -8,6 +8,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class FileUploadComponent {
   @Output() fileSelected = new EventEmitter<Event>();
 
+  imgURL: string | undefined;
+
   public onDropSuccess(event: DragEvent) {
     event.preventDefault();
 
@@ -15,6 +17,8 @@ export class FileUploadComponent {
   }
 
   public onFileSelected(event: Event) {
+console.log(event);
+
     this.fileSelected.emit(event);
   }
 

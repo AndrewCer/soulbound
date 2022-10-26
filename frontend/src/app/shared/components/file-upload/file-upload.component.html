@@ -1,32 +1,25 @@
-<input type="file" class="file-input" accept="application/pdf,image/tiff" (change)="onFileSelected($event)" #fileUpload>
+<input type="file" class="file-input" accept="image/*" (change)="onFileSelected($event)" #fileUpload>
 
 <!-- Upload Area -->
-<div id="uploadArea" class="upload-area mb-3" (click)="fileUpload.click()" (dragover)="$event.preventDefault();"
+<div id="uploadArea" class="upload-area mb-3" (click)="fileUpload.click(); $event.stopPropagation();" (dragover)="$event.preventDefault();"
     (drop)="onDropSuccess($event)">
     <!-- Header -->
-    <div>
+    <!-- <div>
         <p class="upload-area__paragraph">
-            PDF or TIFF
+            JPG, PNG, or GIF
         </p>
-    </div>
+    </div> -->
     <!-- End Header -->
 
     <!-- Drop Zoon -->
-    <div id="dropZoon" class="upload-area__drop-zoon drop-zoon">
-        <span class="drop-zoon__icon">
-            <i class='bx bxs-file'></i>
+    <div id="dropZoon" class="upload-area__drop-zone drop-zone">
+        <span class="drop-zone__icon">
+            <i class='bx bxs-image'></i>
         </span>
-        <p class="drop-zoon__paragraph">Drop file here or click to browse</p>
-        <span id="loadingText" class="drop-zoon__loading-text">Please Wait</span>
+        <p class="drop-zone__paragraph">Drop image here or click to browse</p>
+        <span id="loadingText" class="drop-zone__loading-text">Please Wait</span>
     </div>
     <!-- End Drop Zoon -->
-
-    <div class="mt-1">
-        <p class="upload-area__paragraph upload-area__footer">
-            <mat-icon>lock</mat-icon>
-            Secure Upload - Your files are encrypted during transfer and storage.
-        </p>
-    </div>
 
 </div>
 <!-- End Upload Area -->
