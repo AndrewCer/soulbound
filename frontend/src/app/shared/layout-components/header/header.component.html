@@ -24,13 +24,13 @@
     <div class="main-header-center justify-content-center">
       <ul class="nav nav-item header-icons flex-nowrap">
         <li ngbDropdown class="nav-item" [ngClass]="{'text-muted': currentRoute !== '/collection'}">
-          <button mat-button>Collection</button>
+          <button mat-button routerLink="/collection">Collection</button>
         </li>
         <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': currentRoute !== '/create'}">
-          <button mat-button>Create</button>
+          <button mat-button routerLink="/create" [routerLink]="'/create'">Create</button>
         </li>
         <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': currentRoute !== '/claim'}">
-          <button mat-button>Claim</button>
+          <button mat-button routerLink="/claim">Claim</button>
         </li>
       </ul>
     </div>

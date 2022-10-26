@@ -1,23 +1,24 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Subject, take, takeUntil } from 'rxjs';
 import { TokenRequestService } from 'src/app/core/http/token/token-request.service';
+import { SBT } from 'src/app/shared/models/token.model';
 import { WalletStatus } from 'src/app/shared/models/wallet.model';
 import { WalletService } from 'src/app/shared/services/wallet.service';
 
 @Component({
-    selector: 'home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
+    selector: 'collection',
+    templateUrl: './collection.component.html',
+    styleUrls: ['./collection.component.scss'],
 })
-export class HomeComponent implements OnDestroy {
+export class CollectionComponent implements OnDestroy {
     private subscriptionKiller = new Subject();
+
+    public tokens: SBT[] = [];
 
     constructor(
         private tokenRequestService: TokenRequestService,
         private walletService: WalletService,
     ) {
-        this.walletService.startup();
-
         this.walletService.$walletConnectionChanges.pipe(
             takeUntil(this.subscriptionKiller)
         )
@@ -35,7 +36,6 @@ export class HomeComponent implements OnDestroy {
         this.subscriptionKiller.complete();
     }
 
-    public tokens: any[] = [];
     private async handleWalletChanges(walletStatus: WalletStatus) {
         switch (walletStatus) {
             case WalletStatus.connected:
@@ -62,4 +62,5 @@ export class HomeComponent implements OnDestroy {
                 break;
         }
     }
+
 }

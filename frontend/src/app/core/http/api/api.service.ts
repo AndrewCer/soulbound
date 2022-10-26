@@ -25,6 +25,7 @@ export class ApiService {
 
         const options: any = { headers };
         // const url = environment.apiUrl + path;
+        // TODO(nocs): setup 2 different api services. One for blockchain things and one for our internal api
         const url = path;
 
         if (params && (method === 'get' || method === 'delete')) {
