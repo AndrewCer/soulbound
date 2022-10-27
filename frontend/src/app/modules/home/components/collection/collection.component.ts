@@ -42,16 +42,28 @@ export class CollectionComponent implements OnDestroy {
         switch (walletStatus) {
             case WalletStatus.connected:
                 const tokenURIs = await this.walletService.getTokenURIs(await this.walletService.getAddress());
-                console.log('urls: ', tokenURIs);
+                console.log('URIs: ', tokenURIs);
 
-                tokenURIs.forEach((tokenURI) => {
-                    this.tokenRequestService.get(tokenURI).pipe(
-                        take(1)
-                    ).subscribe((data) => {
-                        console.log(data);
-                        this.tokens.push(data);
-                    });
+                tokenURIs.forEach(async (tokenURI) => {
+                    if (!tokenURI.includes('https://')) {
+                        tokenURI = `https://ipfs.io/ipfs/${tokenURI}/metadata.json`;
+                    }
+                    if (tokenURI.includes('ipfs://')) {
+                        tokenURI = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                    }
+                    const metaData = await fetch(tokenURI)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            return data;
+                        });
+
+                    if (metaData.image.includes('ipfs://')) {
+                        metaData.image = metaData.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                    }
+
+                    this.tokens.push(metaData)
                 });
+
                 break;
             case WalletStatus.disconnected:
                 break;
