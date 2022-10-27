@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AttributesModalComponent } from 'src/app/shared/modal/attributes/attributes.modal.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ClaimComponent } from './components/claim/claim.component';
 import { CollectionComponent } from './components/collection/collection.component';
@@ -29,6 +30,7 @@ const routes: Routes = [
 
 @NgModule({
     declarations: [
+        AttributesModalComponent,
         ClaimComponent,
         CollectionComponent,
         CreateComponent,
@@ -40,5 +42,8 @@ const routes: Routes = [
         RouterModule.forChild(routes)
     ],
     exports: [RouterModule],
+    entryComponents: [
+        AttributesModalComponent
+    ],
 })
 export class HomeModule { }
