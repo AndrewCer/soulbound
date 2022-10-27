@@ -71,6 +71,7 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
 
     // Non pre-issued tokens with limit
     function createToken(string memory _tokenURI, uint256 limit, BurnAuth _burnAuth) public {
+        require(limit > 0, "Increase limit");
         require(limit <= _limitMax, "Reduce limit");
 
         _eventIds.increment();
