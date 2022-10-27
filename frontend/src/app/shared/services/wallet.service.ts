@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { ethers } from "ethers";
 import { BehaviorSubject } from 'rxjs';
+import { BurnAuth } from '../models/burn-auth.model';
+import { SBT } from '../models/token.model';
 import { WalletStatus } from '../models/wallet.model';
 
 // TODO(nocs): see provider events: https://docs.ethers.io/v5/api/providers/provider/#Provider--events
@@ -24,11 +26,11 @@ export class WalletService {
         // 'event Transfer(address from, address to, uint256 tokenId)',
 
         'constructor()',
-
-        'function createToken(string memory tokenURI, uint256 limit, uint256 _burnAuth)',
-        'function createToken(string memory tokenURI, address to, uint256 _burnAuth)',
-        'function createToken(string memory tokenURI, address[] memory to, uint256 _burnAuth)',
-
+        // Create
+        'function createToken(string memory _tokenURI, uint256 limit, uint8 _burnAuth)',
+        // 'function createToken(string memory _tokenURI, address to, uint256 _burnAuth)',
+        // 'function createToken(string memory _tokenURI, address[] memory to, uint256 _burnAuth)',
+        // Claim
         'function claimToken(uint256 eventId) public returns (uint256)',
         'function claimIssuedToken(uint256 eventId) public returns (uint256)',
 
@@ -97,22 +99,39 @@ export class WalletService {
     }
 
     public async getTokenURIs(address: string): Promise<string[]> {
-            const contractFunctions = this.contract.functions;
-            const sbtBalance = await contractFunctions['balanceOf'](address);
-            console.log('balance of SBTs: ', sbtBalance.toString());
+        const contractFunctions = this.contract.functions;
+        const sbtBalance = await contractFunctions['balanceOf'](address);
+        console.log('balance of SBTs: ', sbtBalance.toString());
 
-            let tokenURIs: string[] = [];
-            for (let i = 0; i < sbtBalance; i++) {
+        let tokenURIs: string[] = [];
+        for (let i = 0; i < sbtBalance; i++) {
 
-                const tokenId = (await contractFunctions['tokenOfOwnerByIndex'](address, i)).toString();
-                console.log('tokenID: ', tokenId);
-                
+            const tokenId = (await contractFunctions['tokenOfOwnerByIndex'](address, i)).toString();
+            console.log('tokenID: ', tokenId);
 
-                const tokenURI = (await contractFunctions['tokenURI'](tokenId))[0];
-                tokenURIs.push(tokenURI);
-            }            
 
-            return tokenURIs;
+            const tokenURI = (await contractFunctions['tokenURI'](tokenId))[0];
+            tokenURIs.push(tokenURI);
+        }
+
+        return tokenURIs;
+    }
+
+    public async createTokenWithLimit(tokenURI: string, limit: number, burnAuth: number) {
+        const contractFunctions = this.contract.functions;
+
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+        
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner["createToken(string,uint256,uint8)"](tokenURI, limit, burnAuth);
+
+        console.log(txn);
+        
+
+        await txn.wait();
+
+        return txn;
     }
 }
 

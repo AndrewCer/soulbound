@@ -3854,8 +3854,14 @@ dd {
     cursor: pointer;
 }
 
-.bx {
-    color: var(--primary-bg-color);
+.help-icon {
+    transform: scale(.7);
+}
+
+.absolute-close {
+    position: absolute !important;
+    right: 0;
+    top: 0;
 }
 
 .action-card {
@@ -3892,7 +3898,7 @@ dd {
     -o-transition: all .9s ease;
     -ms-transition: all .9s ease;
     width: 100%;
-    height: 200px;
+    height: 225px;
 }
 
 .card-flyer:hover .image-box img {
@@ -3943,6 +3949,12 @@ dd {
     letter-spacing: 1px;
     color: #000000;
 }
+
+.card-flyer .text-box .card-flyer-body {
+    height: 70px;
+    max-height: 70px;
+}
+
 .card-flyer .text-box p.card-footer {
     font-size: 10px;
 }
