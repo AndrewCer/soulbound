@@ -1,1 +1,3 @@
-# Syfted API
+# Soulbound Project
+
+Soulbound project api repo.
