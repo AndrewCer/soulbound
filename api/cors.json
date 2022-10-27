@@ -1,0 +1,6 @@
+// https://stackoverflow.com/questions/54643222/google-cloud-storage-cors-policy-allow-all
+// https://cloud.google.com/storage/docs/configuring-cors#gsutil
+// [] <- to remove settings
+
+[{"origin": ["*"],"responseHeader": ["*"],"method":
+["GET","POST","HEAD"],"maxAgeSeconds": 86400}]
