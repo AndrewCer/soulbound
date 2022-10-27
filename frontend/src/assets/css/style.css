@@ -1287,6 +1287,12 @@ btn-outline-primary:hover .bg-primary {
     font-family: "feather" !important;
 }
 
+.rounded-button {
+    border-radius: 100px !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
 .btn,
 .sp-container button {
     display: inline-block;
@@ -3901,7 +3907,7 @@ dd {
     height: 225px;
 }
 
-.card-flyer:hover .image-box img {
+.card-flyer.hover:hover .image-box img {
     opacity: 0.7;
     -webkit-transform: scale(1.15);
     -moz-transform: scale(1.15);
@@ -3930,7 +3936,7 @@ dd {
     border-radius: 5px;
 }
 
-.card-flyer:hover {
+.card-flyer.hover:hover {
     background: #fff;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.50);
     -webkit-transition: all 0.2s ease-in;

@@ -1,0 +1,48 @@
+<div class="container d-flex flex-row gap-5" *ngIf="metaData && eventData">
+    <div class="sbt-container p-4 rounded shadow-sm">
+        <div class="image-container rounded shadow-sm">
+            <img class="rounded" [src]="metaData.image" [alt]="metaData.name">
+            <div class="claimed-overlay" *ngIf="eventData.count >= eventData.limit">
+                <p class="text-danger h4">Claimed</p>
+            </div>
+        </div>
+        <div class="card-flyer mt-3 no-hover shadow-sm">
+            <div class="text-box">
+                <div class="text-container">
+                    <h5 class="card-title">{{metaData.name}}</h5>
+                    <p>{{stringFormatterService.truncateString(metaData.description, 79)}}</p>
+                    <p class="text-muted card-footer cursor-pointer" matTooltip="{{eventData.owner}}">
+                        <span>Issued by {{stringFormatterService.truncateAddress(eventData.owner)}}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="claim-container w-100">
+        <ng-container *ngIf="eventData.count >= eventData.limit">
+            <div class="text-center">
+                <p class="display-5">Shoot, all tokens have been claimed 😞</p>
+                <p>Reach out to the event owner <span
+                        matTooltip="{{eventData.owner}}">{{stringFormatterService.truncateAddress(eventData.owner)}}</span>
+                    and ask them to issuer more!</p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="eventData.count < eventData.limit">
+            <div class="text-center">
+                <p class="display-4">Congratulations!<br> You recieved:</p>
+                <p style="font-size: 50px;" class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
+                <p *ngIf="eventData.limit" class="display-6 font-weight-bold"> {{eventData.count +
+                    1}}/{{eventData.limit}}</p>
+                <button type="submit" class="btn rounded-button ripple btn-primary btn-block mt-4 font-weight-bold"
+                    [disabled]="submitting" (click)="claim()">
+                    <ng-container *ngIf="!submitting">
+                        Claim!
+                    </ng-container>
+                    <ng-container *ngIf="submitting">
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    </ng-container>
+                </button>
+            </div>
+        </ng-container>
+    </div>
+</div>

@@ -29,7 +29,7 @@
         <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': currentRoute !== '/create'}">
           <button mat-button routerLink="/create" [routerLink]="'/create'">Create</button>
         </li>
-        <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': currentRoute !== '/claim'}">
+        <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': !currentRoute.includes('/claim')}">
           <button mat-button routerLink="/claim">Claim</button>
         </li>
       </ul>

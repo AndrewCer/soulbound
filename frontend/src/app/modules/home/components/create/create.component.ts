@@ -118,9 +118,6 @@ export class CreateComponent implements OnDestroy {
             }
 
             const ipfsUri = apiResponse.success;
-            console.log(ipfsUri);
-            console.log(this.formControl['tokenLimit'].value, this.formControl['burnAuth'].value);
-            
 
             // Call contract
             if (!this.restricted) {
