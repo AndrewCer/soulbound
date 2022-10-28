@@ -39,7 +39,7 @@ router.post(
 
 
         res.json({
-            success: token.ipnft
+            success: token.url
         });
     });
 
