@@ -2,7 +2,7 @@
 
 // TODO: polygons implementation of SBTs https://polygonscan.com/address/0x42c091743f7b73b2f0043b1fb822b63aaa05041b#code
 
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -38,9 +38,9 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     Counters.Counter private _tokenIds;
     uint256 private _limitMax = 10000;
 
-    // Issued tokens by email
+    // Issued tokens by code - hash associated to any form of identity off chain
     // hash of code => Event Id
-    mapping(bytes32 => uint256) public issuedEmailTokens;
+    mapping(bytes32 => uint256) public issuedCodeTokens;
 
     // Issued tokens by address
     // Event Id => address => Bool
@@ -70,54 +70,44 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     // Non pre-issued tokens with limit
-    function createToken(string memory _tokenURI, uint256 limit, BurnAuth _burnAuth) public {
+    function createToken(string calldata _tokenURI, uint256 limit, BurnAuth _burnAuth) public {
         require(limit > 0, "Increase limit");
         require(limit <= _limitMax, "Reduce limit");
 
-        _eventIds.increment();
-        uint256 eventId = _eventIds.current();
-
-        createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = _tokenURI;
+        uint256 eventId = _createToken(_tokenURI, _burnAuth);
         createdTokens[eventId].limit = limit;
         createdTokens[eventId].restricted = false;
-        createdTokens[eventId].burnAuth = _burnAuth;
     }
 
-    // Pre-issued tokens
-    function createToken(string memory _tokenURI, address[] memory to, BurnAuth _burnAuth) public {
+    // Pre-issued tokens from addresses
+    function createToken(string calldata _tokenURI, address[] calldata to, BurnAuth _burnAuth) public {
         require(to.length > 0, "Requires receiver array");
 
-        _eventIds.increment();
-        uint256 eventId = _eventIds.current();
-
-        createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = _tokenURI;
-
+        uint256 eventId = _createToken(_tokenURI, _burnAuth);
         createdTokens[eventId].restricted = true;
-        createdTokens[eventId].burnAuth = _burnAuth;
 
-        for (uint256 i = 0; i < to.length; ++i) {
-            issuedTokens[eventId][to[i]] = true;
-        }
+        _issueTokens(to, eventId);
     }
 
-    // Pre-issued tokens from email
-    function createTokenFromEmails(string memory _tokenURI, bytes32[] memory to, BurnAuth _burnAuth) public {
+    // Pre-issued tokens from codes
+    function createTokenFromCode(string calldata _tokenURI, bytes32[] calldata to, BurnAuth _burnAuth) public {
         require(to.length > 0, "Requires receiver array");
 
-        _eventIds.increment();
-        uint256 eventId = _eventIds.current();
-
-        createdTokens[eventId].owner = msg.sender;
-        createdTokens[eventId].uri = _tokenURI;
-
+        uint256 eventId = _createToken(_tokenURI, _burnAuth);
         createdTokens[eventId].restricted = true;
-        createdTokens[eventId].burnAuth = _burnAuth;
 
-        for (uint256 i = 0; i < to.length; ++i) {
-            issuedEmailTokens[to[i]] = eventId;
-        }
+        _issueCodeTokens(to, eventId);
+    }
+
+    // Pre-issued tokens from codes and addresses
+    function createTokenFromBoth(string calldata _tokenURI, address[] calldata toAddr, bytes32[] calldata toCode, BurnAuth _burnAuth) public {
+        require(toAddr.length > 0 && toCode.length > 0, "Requires receiver array");
+
+        uint256 eventId = _createToken(_tokenURI, _burnAuth);
+        createdTokens[eventId].restricted = true;
+
+        _issueTokens(toAddr, eventId);
+        _issueCodeTokens(toCode, eventId);
     }
 
     // Mint tokens
@@ -155,13 +145,12 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
         return tokenId;
     }
 
-    // Mint issued token by email
-    // TODO(nocs): maybe make the verbiage of this more generic? Instead of "email" simply use "code"?
-    function claimIssuedTokenFromEmail(uint256 eventId, bytes32 code) public returns (uint256) {
+    // Mint issued token by code
+    function claimIssuedTokenFromCode(uint256 eventId, bytes32 code) public returns (uint256) {
         require(createdTokens[eventId].restricted, "Not a restricted token");
-        require(issuedEmailTokens[code] == eventId, "Token must be issued to you");
+        require(issuedCodeTokens[code] == eventId, "Token must be issued to you");
 
-        delete issuedEmailTokens[code];
+        delete issuedCodeTokens[code];
 
         createdTokens[eventId].count += 1;
 
@@ -184,6 +173,29 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function burnToken(uint256 tokenId, uint256 eventId) public onlyBurnAuth(tokenId, eventId) {
         _burn(tokenId);
+    }
+
+    function _createToken(string calldata _tokenURI, BurnAuth _burnAuth) private returns (uint256) {
+        _eventIds.increment();
+        uint256 eventId = _eventIds.current();
+
+        createdTokens[eventId].owner = msg.sender;
+        createdTokens[eventId].uri = _tokenURI;
+        createdTokens[eventId].burnAuth = _burnAuth;
+
+        return eventId;
+    }
+
+    function _issueTokens(address[] calldata to, uint256 eventId) private {
+        for (uint256 i = 0; i < to.length; ++i) {
+            issuedTokens[eventId][to[i]] = true;
+        }
+    }
+
+    function _issueCodeTokens(bytes32[] calldata to, uint256 eventId) private {
+        for (uint256 i = 0; i < to.length; ++i) {
+            issuedCodeTokens[to[i]] = eventId;
+        }
     }
 
     // Soulbound functionality
