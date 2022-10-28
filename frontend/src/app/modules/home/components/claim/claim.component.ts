@@ -12,18 +12,23 @@ import { WalletService } from 'src/app/shared/services/wallet.service';
     styleUrls: ['./claim.component.scss'],
 })
 export class ClaimComponent implements OnDestroy {
+    public currentRoute: string = '';
     public eventData: EventData | undefined;
     public eventId: string | null = null;
+    public invalidClaimAttempt = false;
     public metaData: SBT | undefined;
     public submitting = false;
     public uniqueCode: string | null = null;
+
+    public claimSuccess = false;
 
     private subscriptionKiller = new Subject();
 
     constructor(
         public stringFormatterService: StringFormatterService,
+        public walletService: WalletService,
         private activatedRoute: ActivatedRoute,
-        private walletService: WalletService,
+        private router: Router,
     ) {
         this.activatedRoute.paramMap.pipe(
             takeUntil(this.subscriptionKiller),
@@ -31,10 +36,49 @@ export class ClaimComponent implements OnDestroy {
             this.eventId = params.get('eventId');
             this.uniqueCode = params.get('code');
 
-            if (this.eventId) {
+            if (this.eventId && parseInt(this.eventId) && parseInt(this.eventId) !== 0) {
                 this.getEventData(this.eventId);
             }
         });
+
+        this.router.events.pipe(
+            takeUntil(this.subscriptionKiller),
+            filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        ).subscribe(async event => {
+            this.currentRoute = event.url;
+
+            if (this.currentRoute.includes('/issued/')) {
+                // URL hit with unique code - used when code is linked to some data offchain, i.e. email address.
+                if (this.uniqueCode) {
+
+
+                    const eventId = await this.walletService.checkCodeForIssuedToken(this.uniqueCode);
+
+                    // Hash does not match an eventId
+                    if (!eventId) {
+                        this.invalidClaimAttempt = true;
+                        return;
+                    }
+                    // Current eventId doesn't match the returned eventId
+                    if (this.eventId && eventId !== parseInt(this.eventId)) {
+                        this.invalidClaimAttempt = true;
+                        return;
+                    }
+                }
+                // URL hit withOUT unique code - used when wallet address is linked to the token.
+                if (!this.uniqueCode && this.eventId) {
+                    const canClaim = await this.walletService.checkWalletForIssuedToken(this.eventId);
+                    if (!canClaim) {
+                        this.invalidClaimAttempt = true;
+                        return;
+                    }
+
+                }
+
+                this.invalidClaimAttempt = false;
+            }
+        });
+
     }
 
     ngOnDestroy() {
@@ -46,27 +90,29 @@ export class ClaimComponent implements OnDestroy {
     public async getEventData(eventId: string) {
         this.eventData = await this.walletService.getEventData(eventId);
 
+        if (!this.eventData) {
+            return;
+        }
+
         this.fetchMetadata(this.eventData);
     }
 
     public async fetchMetadata(eventData: EventData) {
         let tokenURI = eventData.uri;
+        console.log(tokenURI);
 
-        if (!tokenURI.includes('https://')) {
-            tokenURI = `https://ipfs.io/ipfs/${tokenURI}/metadata.json`;
-        }
         if (tokenURI.includes('ipfs://')) {
             tokenURI = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
         }
         console.log(tokenURI);
-        
+
         this.metaData = await fetch(tokenURI)
             .then((response) => response.json())
             .then((data) => {
                 return data;
             });
 
-            
+
 
         if (this.metaData) {
             if (this.metaData.image.includes('ipfs://')) {
@@ -82,7 +128,7 @@ export class ClaimComponent implements OnDestroy {
         if (!this.eventId) {
             return;
         }
-        if(!this.eventData) {
+        if (!this.eventData) {
             return;
         }
 
@@ -91,10 +137,34 @@ export class ClaimComponent implements OnDestroy {
         }
 
         this.submitting = true;
-        
-        const txn = await this.walletService.claimTokenWithLimit(this.eventId);
+
+        await this.walletService.claimTokenWithLimit(this.eventId);
 
         this.submitting = false;
+        this.claimSuccess = true;
+    }
+
+    // Used for both code or address claims
+    public async claimIssuedToken() {
+        if (!this.eventId) {
+            return;
+        }
+
+        this.submitting = true;
+
+        if (this.uniqueCode) {
+            await this.walletService.claimIssuedTokenFromCode(this.eventId, this.uniqueCode);
+
+            this.submitting = false;
+            this.claimSuccess = true;
+        }
+        else {
+            await this.walletService.claimIssuedToken(this.eventId);
+
+            this.submitting = false;
+            this.claimSuccess = true;
+        }
+
     }
 
 }

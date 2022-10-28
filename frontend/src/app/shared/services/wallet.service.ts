@@ -12,6 +12,8 @@ import { WalletStatus } from '../models/wallet.model';
     providedIn: 'root'
 })
 export class WalletService {
+    public connectedWallet: string | undefined;
+
     public $walletConnectionChanges = new BehaviorSubject<WalletStatus | undefined>(undefined);
     private set walletConnectionChanges(value) {
         this.$walletConnectionChanges.next(value);
@@ -20,9 +22,8 @@ export class WalletService {
         return this.$walletConnectionChanges.getValue();
     }
 
-    private contractAddress = '0x53AdBe75c8E6aAF00418464F3EE9c11C7b8B2673';
+    private contractAddress = '0xf5e13ff353C6CEd2FEe356becE63C3671Dc5Eb11';
     private sbtAbi: string | string[];
-    private iface = new ethers.utils.Interface(["event Transfer(address indexed from, address indexed to, uint256 value)"]);
     private contract: ethers.Contract;
     private provider: ethers.providers.Web3Provider;
     private signer: ethers.providers.JsonRpcSigner | undefined;
@@ -59,7 +60,9 @@ export class WalletService {
         try {
             await this.provider.send("eth_requestAccounts", []);
 
+            this.connectedWallet = await this.getAddress();
             this.walletConnectionChanges = WalletStatus.connected;
+
             return;
         } catch (error) {
             this.walletConnectionChanges = WalletStatus.error;
@@ -69,10 +72,30 @@ export class WalletService {
 
     public disconnect() {
         this.signer = undefined;
+        this.connectedWallet = undefined;
 
         this.walletConnectionChanges = WalletStatus.disconnected;
     }
 
+    public async checkCodeForIssuedToken(code: string): Promise<number | undefined> {
+        let bigNumber = await this.contract['issuedCodeTokens'](this.createHash(code));
+
+        try {
+            const eventId = parseInt(bigNumber.toString());
+
+            if (eventId > 0) {
+                return eventId;
+            }
+        } catch (error) {
+            return undefined;
+        }
+
+        return undefined;
+    }
+
+    public async checkWalletForIssuedToken(eventId: string): Promise<boolean> {
+        return await this.contract['issuedTokens(uint256,address)'](eventId, await this.getAddress());
+    }
 
     public async getAddress(): Promise<string> {
         if (!this.signer) {
@@ -101,13 +124,20 @@ export class WalletService {
         return tokenURIs;
     }
 
-    public async getEventData(eventId: string): Promise<EventData> {
+    public async getEventData(eventId: string): Promise<EventData | undefined> {
         const contractFunctions = this.contract.functions;
-        
+
         const data = await contractFunctions['createdTokens'](eventId);
 
         console.log(data);
-        
+
+        if (!data.owner) {
+            return undefined;
+        }
+
+        if (data.owner == ethers.constants.AddressZero) {
+            return undefined;
+        }
 
         const eventData: EventData = {
             burnAuth: data.burnAuth,
@@ -123,29 +153,71 @@ export class WalletService {
         if (data.count) {
             eventData.count = parseInt(data.count.toString());
         }
-        
-        
+
+
         return eventData;
     }
 
+    // Non pre-issued tokens with limit
     public async createTokenWithLimit(tokenURI: string, limit: number, burnAuth: number) {
         const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
-        
+
         const contractSigner = sbtContract.connect(this.signer);
 
         const txn = await contractSigner["createToken(string,uint256,uint8)"](tokenURI, limit, burnAuth);
 
         console.log(txn);
-        
+
 
         await txn.wait();
+        return txn;
+    }
 
+    // Pre-issued tokens from addresses
+    public async createTokenFromAddresses(tokenURI: string, to: string[], burnAuth: number) {
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner["createToken(string,address[],uint8)"](tokenURI, to, burnAuth);
+
+        console.log(txn);
+
+        await txn.wait();
+        return txn;
+    }
+
+    // Pre-issued tokens from codes
+    public async createTokenFromCodes(tokenURI: string, to: string[], burnAuth: number) {
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner.createTokenFromCode(tokenURI, to, burnAuth);
+
+        console.log(txn);
+
+        await txn.wait();
+        return txn;
+    }
+
+    // Pre-issued tokens from codes and addresses
+    public async createTokenFromBoth(tokenURI: string, toAddr: string[], toCode: string[], burnAuth: number) {
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner.createTokenFromBoth(tokenURI, toAddr, toCode, burnAuth);
+
+        console.log(txn);
+
+        await txn.wait();
         return txn;
     }
 
     public async claimTokenWithLimit(eventId: string) {
         const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
-        
+
         const contractSigner = sbtContract.connect(this.signer);
 
         const txn = await contractSigner.claimToken(eventId);
@@ -153,8 +225,38 @@ export class WalletService {
         console.log(txn);
 
         await txn.wait();
-
         return txn;
+    }
+
+    public async claimIssuedToken(eventId: string) {
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner.claimIssuedToken(eventId);
+
+        console.log(txn);
+        await txn.wait();
+        return txn;
+    }
+
+    public async claimIssuedTokenFromCode(eventId: string, code: string) {
+        const sbtContract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider) as any;
+        const contractSigner = sbtContract.connect(this.signer);
+
+        const txn = await contractSigner.claimIssuedTokenFromCode(eventId, this.createHash(code));
+
+        console.log(txn);
+
+        await txn.wait();
+        return txn;
+    }
+
+    public isAddress(address: string): boolean {
+        return ethers.utils.isAddress(address);
+    }
+
+    public createHash(str: string): string {
+        return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(str));
     }
 }
 

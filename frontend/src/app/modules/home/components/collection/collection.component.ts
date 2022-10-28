@@ -45,7 +45,7 @@ export class CollectionComponent implements OnDestroy {
                 console.log('URIs: ', tokenURIs);
 
                 tokenURIs.forEach(async (tokenURI) => {
-                    if (!tokenURI.includes('https://')) {
+                    if (!tokenURI.includes('https://') && !tokenURI.includes('ipfs://')) {
                         tokenURI = `https://ipfs.io/ipfs/${tokenURI}/metadata.json`;
                     }
                     if (tokenURI.includes('ipfs://')) {

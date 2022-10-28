@@ -122,9 +122,9 @@
                                 </div>
 
                                 <div class="col-lg-12 form-group" *ngIf="restricted">
-                                    <label class="form-label">Issue to:
+                                    <label class="form-label">Issue to: <span class="tx-danger">*</span>
                                         <input class="form-control" formControlName="issueTo"
-                                            placeholder="Comma separated list of addresses"
+                                            placeholder="Comma separated list of wallet addresses OR emails"
                                             [attr.disabled]="submitting ? true : null"
                                             [ngClass]="{'has-success': formControl['issueTo'].valid}">
                                     </label>

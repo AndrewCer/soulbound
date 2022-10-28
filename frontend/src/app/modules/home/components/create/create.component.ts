@@ -1,9 +1,13 @@
 import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { nanoid } from 'nanoid'
 import { first, Subject, take } from 'rxjs';
+
 import { FileRequestService } from 'src/app/core/http/file/file-request.service';
+import { KeyValueString } from 'src/app/shared/models/map.model';
 import { WalletService } from 'src/app/shared/services/wallet.service';
+
 
 
 @Component({
@@ -119,9 +123,58 @@ export class CreateComponent implements OnDestroy {
 
             const ipfsUri = apiResponse.success;
 
-            // Call contract
+            // Non pre-issued
             if (!this.restricted) {
-                const txn = await this.walletService.createTokenWithLimit(ipfsUri, parseInt(this.formControl['tokenLimit'].value), parseInt(this.formControl['burnAuth'].value));
+                await this.walletService.createTokenWithLimit(ipfsUri, parseInt(this.formControl['tokenLimit'].value), parseInt(this.formControl['burnAuth'].value));
+
+                this.submitting = false;
+            }
+            // Pre-issued
+            if (this.restricted) {
+                console.log(this.formControl['issueTo'].value);
+
+                let issueToStr = this.formControl['issueTo'].value;
+                // Remove trailing comma if one exists
+                issueToStr = issueToStr.replace(/,*$/, '');
+                // Remove all spaces
+                issueToStr = issueToStr.replace(/\s+/g, '');
+
+                console.log(issueToStr.split(','));
+
+                // Remove duplicates
+                const issueToArr = [...new Set(issueToStr.split(','))] as string[];
+
+                const walletAddresses = issueToArr.filter((receiver) => this.walletService.isAddress(receiver as string));
+                const emails = issueToArr.filter((receiver) => receiver.includes('@'));
+
+                console.log('issueToArr: ', issueToArr);
+
+                console.log('emails: ', emails);
+                console.log('wallets: ', walletAddresses);
+
+                let emailMapping: KeyValueString = {};
+                let emailCodes: string[] = [];
+                emails.forEach((email) => {
+                    const code = nanoid();
+                    emailMapping[email] = code;
+
+                    emailCodes.push(this.walletService.createHash(code));
+                });
+
+                console.log('email mapping: ', emailMapping);
+
+                // Both wallets and emails
+                if (walletAddresses.length && emailCodes.length) {
+                    await this.walletService.createTokenFromBoth(ipfsUri, walletAddresses, emailCodes, parseInt(this.formControl['burnAuth'].value));
+                }
+                // Only wallets
+                if (walletAddresses.length && !emailCodes.length) {
+                    await this.walletService.createTokenFromAddresses(ipfsUri, walletAddresses, parseInt(this.formControl['burnAuth'].value));
+                }
+                // Only emails
+                if (emailCodes.length && !walletAddresses.length) {
+                    await this.walletService.createTokenFromCodes(ipfsUri, emailCodes, parseInt(this.formControl['burnAuth'].value));
+                }
 
                 this.submitting = false;
             }

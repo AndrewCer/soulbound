@@ -29,6 +29,10 @@ const routes: Routes = [
                 component: ClaimComponent,
             },
             {
+                path: 'claim/issued/:eventId',
+                component: ClaimComponent,
+            },
+            {
                 path: 'claim/issued/:eventId/:code',
                 component: ClaimComponent,
             },

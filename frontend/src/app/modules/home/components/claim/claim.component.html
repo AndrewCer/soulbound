@@ -2,8 +2,12 @@
     <div class="sbt-container p-4 rounded shadow-sm">
         <div class="image-container rounded shadow-sm">
             <img class="rounded" [src]="metaData.image" [alt]="metaData.name">
-            <div class="claimed-overlay" *ngIf="eventData.count >= eventData.limit">
+            <div class="claimed-overlay" *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
                 <p class="text-danger h4">Claimed</p>
+            </div>
+            <div class="claimed-overlay"
+                *ngIf="invalidClaimAttempt || (eventData.restricted && !currentRoute.includes('/issued/'))">
+                <p class="text-danger h4">Restricted</p>
             </div>
         </div>
         <div class="card-flyer mt-3 no-hover shadow-sm">
@@ -19,22 +23,23 @@
         </div>
     </div>
     <div class="claim-container w-100">
-        <ng-container *ngIf="eventData.count >= eventData.limit">
+        <!-- Non pre-issued token -->
+        <ng-container *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
             <div class="text-center">
-                <p class="display-5">Shoot, all tokens have been claimed 😞</p>
+                <p class="display-5">😞 Zero tokens left 😞</p>
                 <p>Reach out to the event owner <span
                         matTooltip="{{eventData.owner}}">{{stringFormatterService.truncateAddress(eventData.owner)}}</span>
                     and ask them to issuer more!</p>
             </div>
         </ng-container>
-        <ng-container *ngIf="eventData.count < eventData.limit">
+        <ng-container *ngIf="!eventData.restricted && eventData.count < eventData.limit">
             <div class="text-center">
-                <p class="display-4">Congratulations!<br> You recieved:</p>
+                <p class="display-4">Congratulations!<br> You received:</p>
                 <p style="font-size: 50px;" class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
                 <p *ngIf="eventData.limit" class="display-6 font-weight-bold"> {{eventData.count +
                     1}}/{{eventData.limit}}</p>
                 <button type="submit" class="btn rounded-button ripple btn-primary btn-block mt-4 font-weight-bold"
-                    [disabled]="submitting" (click)="claim()">
+                    [disabled]="submitting" (click)="claim()" *ngIf="!claimSuccess">
                     <ng-container *ngIf="!submitting">
                         Claim!
                     </ng-container>
@@ -42,6 +47,40 @@
                         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
                     </ng-container>
                 </button>
+                <h5 class="text-success" *ngIf="claimSuccess">
+                    Claimed!
+                </h5>
+            </div>
+        </ng-container>
+
+        <!-- Pre-issued token -->
+        <ng-container *ngIf="invalidClaimAttempt || (eventData.restricted && !currentRoute.includes('/issued/'))">
+            <div class="text-center">
+                <p class="display-5">🔒 This is a restricted token 🔒</p>
+                <p>Verify that you have a valid link or reach out to the event owner <span
+                        matTooltip="{{eventData.owner}}">{{stringFormatterService.truncateAddress(eventData.owner)}}</span>
+                    and get one issued to you!</p>
+                <p *ngIf="currentRoute.includes('/issued/') && !this.uniqueCode"><b>NOTE: </b> Make sure you are
+                    connected to us with the right wallet. <br>Connected wallet:<br> {{walletService.connectedWallet}}
+                </p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="!invalidClaimAttempt && (eventData.restricted && currentRoute.includes('/issued/'))">
+            <div class="text-center">
+                <p class="display-4">Congratulations!<br> You received:</p>
+                <p style="font-size: 50px;" class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
+                <button type="submit" class="btn rounded-button ripple btn-primary btn-block mt-4 font-weight-bold"
+                    [disabled]="submitting" (click)="claimIssuedToken()" *ngIf="!claimSuccess">
+                    <ng-container *ngIf="!submitting">
+                        Claim!
+                    </ng-container>
+                    <ng-container *ngIf="submitting">
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    </ng-container>
+                </button>
+                <h5 class="text-success" *ngIf="claimSuccess">
+                    Claimed!
+                </h5>
             </div>
         </ng-container>
     </div>
