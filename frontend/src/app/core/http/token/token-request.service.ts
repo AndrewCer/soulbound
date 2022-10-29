@@ -2,17 +2,20 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiService } from 'src/app/core/http/api/api.service';
-import { DocumentSummarizationReturn, DocumentUploadReturn, DocumentVisionReturn, TldrReturn } from 'src/app/shared/models/ai.model';
 import { ApiResponse, RequestMethod } from 'src/app/shared/models/api.model';
+import { EventToken } from 'src/app/shared/models/event-token.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class TokenRequestService {
+export class EventTokenRequestService {
+    private basePath = 'event';
+    private versionPath = `/v1/${this.basePath}`
 
     constructor(private apiService: ApiService) { }
 
-    public get(url: string): Observable<any> {
-        return this.apiService.request(RequestMethod.get, url);
+    public create(data: EventToken): Observable<ApiResponse<boolean>> {
+        const path = `${this.versionPath}`;
+        return this.apiService.request(RequestMethod.post, path, data);
     }
 }

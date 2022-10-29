@@ -27644,7 +27644,7 @@ ul.inbox-pagination {
 }
 
 hr:not([size]) {
-    height: 0px;
+    height: 0.03rem;
 }
 
 ul.timeline li {

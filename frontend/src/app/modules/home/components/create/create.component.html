@@ -1,4 +1,42 @@
-<div class="container">
+<div class="container sbt-container d-flex flex-row gap-5" *ngIf="eventData && metaData">
+    <ng-container>
+        <token [eventData]="eventData" [metaData]="metaData"></token>
+    </ng-container>
+    <div class="w-100">
+        <div class="row row-sm h-100">
+            <div class="col-lg-12 col-md-12 h-100">
+                <div class="card custom-card h-100 overflow-auto">
+                    <div class="card-body h-100">
+                        <p class="display-6 font-weight-bold">Created!</p>
+                        <h5>Important stuff</h5>
+                        <hr />
+                        <p>Event ID: <b>{{importantStuff.eventId}}</b> - save this!</p>
+                        <ng-container *ngIf="!restricted">
+                            <p>Claim link: <b>{{importantStuff.claimLink}}</b></p>
+                            <p>Limit: {{eventData.limit}}</p>
+                        </ng-container>
+                        <ng-container *ngIf="restricted">
+                            <hr />
+                            <div *ngIf="importantStuff.wallets">
+                                <p><b>{{importantStuff.wallets.length}}</b> wallets</p>
+                                <p>Wallet claim link: <b>{{importantStuff.claimLink}}</b></p>
+                            </div>
+                            <hr />
+                            <div class="mh-100" *ngIf="importantStuff.emails && importantStuff.emailMapping">
+                                <p><b>{{importantStuff.emails.length}}</b> emails</p>
+                                <p *ngFor="let item of importantStuff.emailMapping | keyvalue">
+                                    Email: {{item.key}} <br>Code: <b>{{item.value}}</b>
+                                </p>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" *ngIf="!eventData && !metaData">
     <h1>Create SBT</h1>
 
     <!-- <div class="row justify-content-center gap-4 mt-4">
@@ -85,8 +123,8 @@
                                             <label class="custom-control custom-radio custom-control-md">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"
                                                     value="2" formControlName="burnAuth">
-                                                <span
-                                                    class="custom-control-label custom-control-label-md  tx-17">Issuer & Claimer</span>
+                                                <span class="custom-control-label custom-control-label-md  tx-17">Issuer
+                                                    & Claimer</span>
                                             </label>
                                         </div>
                                         <div class="form-check form-check-inline">
@@ -124,7 +162,7 @@
                                 <div class="col-lg-12 form-group" *ngIf="restricted">
                                     <label class="form-label">Issue to: <span class="tx-danger">*</span>
                                         <input class="form-control" formControlName="issueTo"
-                                            placeholder="Comma separated list of wallet addresses OR emails"
+                                            placeholder="Comma separated list of wallet addresses and/or emails"
                                             [attr.disabled]="submitting ? true : null"
                                             [ngClass]="{'has-success': formControl['issueTo'].valid}">
                                     </label>

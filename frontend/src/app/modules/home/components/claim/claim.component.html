@@ -1,28 +1,9 @@
 <div class="container d-flex flex-row gap-5" *ngIf="metaData && eventData">
-    <div class="sbt-container p-4 rounded shadow-sm">
-        <div class="image-container rounded shadow-sm">
-            <img class="rounded" [src]="metaData.image" [alt]="metaData.name">
-            <div class="claimed-overlay" *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
-                <p class="text-danger h4">Claimed</p>
-            </div>
-            <div class="claimed-overlay"
-                *ngIf="invalidClaimAttempt || (eventData.restricted && !currentRoute.includes('/issued/'))">
-                <p class="text-danger h4">Restricted</p>
-            </div>
-        </div>
-        <div class="card-flyer mt-3 no-hover shadow-sm">
-            <div class="text-box">
-                <div class="text-container">
-                    <h5 class="card-title">{{metaData.name}}</h5>
-                    <p>{{stringFormatterService.truncateString(metaData.description, 79)}}</p>
-                    <p class="text-muted card-footer cursor-pointer" matTooltip="{{eventData.owner}}">
-                        <span>Issued by {{stringFormatterService.truncateAddress(eventData.owner)}}</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="claim-container w-100">
+
+    <token [eventData]="eventData" [metaData]="metaData" [invalidClaimAttempt]="invalidClaimAttempt"
+        [currentRoute]="currentRoute"></token>
+
+    <div class="w-100">
         <!-- Non pre-issued token -->
         <ng-container *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
             <div class="text-center">

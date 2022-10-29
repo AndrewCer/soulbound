@@ -24,9 +24,7 @@ export class ApiService {
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
         const options: any = { headers };
-        // const url = environment.apiUrl + path;
-        // TODO(nocs): setup 2 different api services. One for blockchain things and one for our internal api
-        const url = path;
+        const url = environment.apiUrl + path;
 
         if (params && (method === 'get' || method === 'delete')) {
             let httpParams = new HttpParams();

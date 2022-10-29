@@ -28,6 +28,7 @@ import { CancelSubscriptionUndoComponent } from './components/modals/cancel-subs
 import { UpdateSubscriptionComponent } from './components/modals/update-subscription/update-subscription.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { SnackBarFeedbackComponent } from './components/snack-bars/feedback/snack-bar-feedback.component';
+import { TokenComponent } from './components/token/token.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -41,6 +42,7 @@ const components: any[] = [
   PageHeaderComponent,
   SidebarComponent,
   TabToTopComponent,
+  TokenComponent,
   ContentLayoutComponent,
   ErrorLayoutComponent,
   FileUploadComponent,

@@ -36,7 +36,7 @@ export class ClaimComponent implements OnDestroy {
             this.eventId = params.get('eventId');
             this.uniqueCode = params.get('code');
 
-            if (this.eventId && parseInt(this.eventId) && parseInt(this.eventId) !== 0) {
+            if (this.eventId && this.eventId.length === 21) {
                 this.getEventData(this.eventId);
             }
         });
@@ -45,6 +45,8 @@ export class ClaimComponent implements OnDestroy {
             takeUntil(this.subscriptionKiller),
             filter((e): e is NavigationEnd => e instanceof NavigationEnd),
         ).subscribe(async event => {
+            console.log(event);
+            
             this.currentRoute = event.url;
 
             if (this.currentRoute.includes('/issued/')) {
@@ -52,15 +54,16 @@ export class ClaimComponent implements OnDestroy {
                 if (this.uniqueCode) {
 
 
-                    const eventId = await this.walletService.checkCodeForIssuedToken(this.uniqueCode);
+                    const eventId = await this.walletService.checkCodeForIssuedToken(this.uniqueCode);                    
 
-                    // Hash does not match an eventId
+                    // No such eventId exists
                     if (!eventId) {
                         this.invalidClaimAttempt = true;
                         return;
                     }
+
                     // Current eventId doesn't match the returned eventId
-                    if (this.eventId && eventId !== parseInt(this.eventId)) {
+                    if (this.eventId && eventId !== this.walletService.createHash(this.eventId)) {
                         this.invalidClaimAttempt = true;
                         return;
                     }

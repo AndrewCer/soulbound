@@ -1,6 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subject, take, takeUntil } from 'rxjs';
-import { TokenRequestService } from 'src/app/core/http/token/token-request.service';
+import { Subject, takeUntil } from 'rxjs';
 import { SBT } from 'src/app/shared/models/token.model';
 import { WalletStatus } from 'src/app/shared/models/wallet.model';
 import { StringFormatterService } from 'src/app/shared/services/string-formatter.service';
@@ -18,7 +17,6 @@ export class CollectionComponent implements OnDestroy {
 
     constructor(
         public stringFormatterService: StringFormatterService,
-        private tokenRequestService: TokenRequestService,
         private walletService: WalletService,
     ) {
         this.walletService.$walletConnectionChanges.pipe(

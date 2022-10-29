@@ -1,0 +1,28 @@
+<div class="sbt-container p-4 rounded shadow-sm" *ngIf="metaData && eventData">
+    <div class="image-container rounded shadow-sm">
+        <img #userImage class="rounded" [src]="metaData.image" [alt]="metaData.name">
+        <img *ngIf="!userImage.complete" class="rounded" src="assets/img/placeholder.png" alt="Placeholder image" [matTooltip]="'IPFS can sometimes take a while to process your image.'">
+        <ng-container *ngIf="currentRoute">
+            <div class="claimed-overlay" *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
+                <p class="text-danger h4">Claimed</p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="currentRoute">
+            <div class="claimed-overlay"
+                *ngIf="invalidClaimAttempt || (eventData.restricted && !currentRoute?.includes('/issued/'))">
+                <p class="text-danger h4">Restricted</p>
+            </div>
+        </ng-container>
+    </div>
+    <div class="card-flyer mt-3 no-hover shadow-sm">
+        <div class="text-box">
+            <div class="text-container">
+                <h5 class="card-title">{{metaData.name}}</h5>
+                <p>{{stringFormatterService.truncateString(metaData.description, 79)}}</p>
+                <p class="text-muted card-footer cursor-pointer" matTooltip="{{eventData.owner}}">
+                    <span>Issued by {{stringFormatterService.truncateAddress(eventData.owner)}}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

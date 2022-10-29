@@ -1,0 +1,32 @@
+.sbt-container {
+    max-width: 600px;
+    min-width: 300px;
+
+    height: 100%;
+
+    background-color: #C2FFD8;
+    background-image: linear-gradient(304deg, #C2FFD8 10%, #465EFB 100%);
+}
+
+.image-container {
+    position: relative;
+    background-color: #fff;
+    
+    height: 300px;
+    width: 300px;
+}
+
+.claimed-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.68);
+}
+
+.claimed-overlay p {
+    transform: rotate(327deg);
+}
