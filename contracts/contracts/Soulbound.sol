@@ -22,7 +22,7 @@ import "hardhat/console.sol";
  */
 //  TODO(nocs): validate if we need ERC721URIStorage aka tokenURI as we are already storing it manually.
 contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
-    event EventToken(uint256 eventId, uint256 tokenId);
+    event EventToken(bytes32 eventId, uint256 tokenId);
 
     struct Token {
         BurnAuth burnAuth;
@@ -39,18 +39,18 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     uint256 private _limitMax = 10000;
 
     // Issued tokens by code - hash associated to any form of identity off chain
-    // hash of code => Event Id
-    mapping(bytes32 => uint256) public issuedCodeTokens;
+    // hash of code => Event Id hash
+    mapping(bytes32 => bytes32) public issuedCodeTokens;
 
     // Issued tokens by address
-    // Event Id => address => Bool
-    mapping(uint256 => mapping(address => bool)) public issuedTokens;
-    // Event Id => Token
-    mapping(uint256 => Token) public createdTokens;
+    // Event Id hash => address => Bool
+    mapping(bytes32 => mapping(address => bool)) public issuedTokens;
+    // Event Id hash => Token
+    mapping(bytes32 => Token) public createdTokens;
 
     constructor() ERC721("Soulbound", "Bound") {}
 
-    modifier onlyBurnAuth(uint256 tokenId, uint256 eventId) {
+    modifier onlyBurnAuth(uint256 tokenId, bytes32 eventId) {
         if (createdTokens[eventId].burnAuth == BurnAuth.OwnerOnly) {
             require(msg.sender == ownerOf(tokenId), "Only owner may burn");
         }
@@ -69,41 +69,46 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
         _;
     }
 
+    modifier eventExists(bytes32 eventId) {
+        require(createdTokens[eventId].owner == address(0x0), 'EventId taken');
+        _;
+    }
+
     // Non pre-issued tokens with limit
-    function createToken(string calldata _tokenURI, uint256 limit, BurnAuth _burnAuth) public {
+    function createToken(bytes32 eventId, string calldata _tokenURI, uint256 limit, BurnAuth _burnAuth) public eventExists(eventId) {
         require(limit > 0, "Increase limit");
         require(limit <= _limitMax, "Reduce limit");
 
-        uint256 eventId = _createToken(_tokenURI, _burnAuth);
+        _createToken(eventId, _tokenURI, _burnAuth);
         createdTokens[eventId].limit = limit;
         createdTokens[eventId].restricted = false;
     }
 
     // Pre-issued tokens from addresses
-    function createToken(string calldata _tokenURI, address[] calldata to, BurnAuth _burnAuth) public {
+    function createTokenFromAddresses(bytes32 eventId, string calldata _tokenURI, address[] calldata to, BurnAuth _burnAuth) public eventExists(eventId) {
         require(to.length > 0, "Requires receiver array");
 
-        uint256 eventId = _createToken(_tokenURI, _burnAuth);
+        _createToken(eventId, _tokenURI, _burnAuth);
         createdTokens[eventId].restricted = true;
 
         _issueTokens(to, eventId);
     }
 
     // Pre-issued tokens from codes
-    function createTokenFromCode(string calldata _tokenURI, bytes32[] calldata to, BurnAuth _burnAuth) public {
+    function createTokenFromCode(bytes32 eventId, string calldata _tokenURI, bytes32[] calldata to, BurnAuth _burnAuth) public eventExists(eventId)  {
         require(to.length > 0, "Requires receiver array");
 
-        uint256 eventId = _createToken(_tokenURI, _burnAuth);
+        _createToken(eventId, _tokenURI, _burnAuth);
         createdTokens[eventId].restricted = true;
 
         _issueCodeTokens(to, eventId);
     }
 
     // Pre-issued tokens from codes and addresses
-    function createTokenFromBoth(string calldata _tokenURI, address[] calldata toAddr, bytes32[] calldata toCode, BurnAuth _burnAuth) public {
+    function createTokenFromBoth(bytes32 eventId, string calldata _tokenURI, address[] calldata toAddr, bytes32[] calldata toCode, BurnAuth _burnAuth) public {
         require(toAddr.length > 0 && toCode.length > 0, "Requires receiver array");
 
-        uint256 eventId = _createToken(_tokenURI, _burnAuth);
+        _createToken(eventId, _tokenURI, _burnAuth);
         createdTokens[eventId].restricted = true;
 
         _issueTokens(toAddr, eventId);
@@ -111,7 +116,7 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     // Mint tokens
-    function claimToken(uint256 eventId) public returns (uint256) {
+    function claimToken(bytes32 eventId) public returns (uint256) {
         require(createdTokens[eventId].restricted == false, "Restricted token");
         require(createdTokens[eventId].limit > createdTokens[eventId].count, "Token claim limit reached");
 
@@ -128,7 +133,7 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     // Mint issued token
-    function claimIssuedToken(uint256 eventId) public returns (uint256) {
+    function claimIssuedToken(bytes32 eventId) public returns (uint256) {
         require(createdTokens[eventId].restricted, "Not a restricted token");
         require(issuedTokens[eventId][msg.sender], "Token must be issued to you");
 
@@ -146,7 +151,7 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     // Mint issued token by code
-    function claimIssuedTokenFromCode(uint256 eventId, bytes32 code) public returns (uint256) {
+    function claimIssuedTokenFromCode(bytes32 eventId, bytes32 code) public returns (uint256) {
         require(createdTokens[eventId].restricted, "Not a restricted token");
         require(issuedCodeTokens[code] == eventId, "Token must be issued to you");
 
@@ -164,35 +169,30 @@ contract Soulbound is ERC721URIStorage, ERC721Enumerable, Ownable {
         return tokenId;
     }
 
-    function incraseLimit(uint256 eventId, uint256 limit) public {
+    function incraseLimit(bytes32 eventId, uint256 limit) public {
         require(createdTokens[eventId].owner == msg.sender, "Must be event owner");
         require(createdTokens[eventId].limit < limit, "Limit must be higher");
 
         createdTokens[eventId].limit = limit;
     }
 
-    function burnToken(uint256 tokenId, uint256 eventId) public onlyBurnAuth(tokenId, eventId) {
+    function burnToken(uint256 tokenId, bytes32 eventId) public onlyBurnAuth(tokenId, eventId) {
         _burn(tokenId);
     }
 
-    function _createToken(string calldata _tokenURI, BurnAuth _burnAuth) private returns (uint256) {
-        _eventIds.increment();
-        uint256 eventId = _eventIds.current();
-
+    function _createToken(bytes32 eventId, string calldata _tokenURI, BurnAuth _burnAuth) private {
         createdTokens[eventId].owner = msg.sender;
         createdTokens[eventId].uri = _tokenURI;
         createdTokens[eventId].burnAuth = _burnAuth;
-
-        return eventId;
     }
 
-    function _issueTokens(address[] calldata to, uint256 eventId) private {
+    function _issueTokens(address[] calldata to, bytes32 eventId) private {
         for (uint256 i = 0; i < to.length; ++i) {
             issuedTokens[eventId][to[i]] = true;
         }
     }
 
-    function _issueCodeTokens(bytes32[] calldata to, uint256 eventId) private {
+    function _issueCodeTokens(bytes32[] calldata to, bytes32 eventId) private {
         for (uint256 i = 0; i < to.length; ++i) {
             issuedCodeTokens[to[i]] = eventId;
         }
