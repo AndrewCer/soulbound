@@ -84,5 +84,5 @@ const server = app.listen(PORT, async () => {
     console.log(`Listening on port ${PORT}`);
 
     // await secretManagerService.init();
-    // await mongoConnectionService.connect();
+    await mongoConnectionService.connect();
 });

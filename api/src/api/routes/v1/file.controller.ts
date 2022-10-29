@@ -4,6 +4,7 @@ import multer from 'multer';
 import { NFTStorage, File, Token } from "nft.storage";
 import { TokenInput } from 'nft.storage/dist/src/token';
 import { SBT } from '../../../models/token.model';
+import nanoidService from '../../../services/id-generators/nanoid.service';
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.post(
     async (req: express.Request, res: express.Response) => {
         const file = req.file as Express.Multer.File;
 
-        const imageFile = new File([file.buffer], req.body.name, { type: file.mimetype })
+        const imageFile = new File([file.buffer], nanoidService.generate() + req.body.name, { type: file.mimetype })
         const metaData: any = {
             name: req.body.name,
             description: req.body.description,
@@ -41,12 +42,6 @@ router.post(
         res.json({
             success: token.url
         });
-    });
-
-router.post(
-    '/metadata',
-    async (req: express.Request, res: express.Response) => {
-        res.json({ success: true });
     });
 
 // Read
