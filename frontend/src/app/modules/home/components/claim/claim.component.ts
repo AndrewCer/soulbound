@@ -46,8 +46,6 @@ export class ClaimComponent implements OnDestroy {
             takeUntil(this.subscriptionKiller),
             filter((e): e is NavigationEnd => e instanceof NavigationEnd),
         ).subscribe(async event => {
-            console.log(event);
-            
             this.currentRoute = event.url;
 
             if (this.currentRoute.includes('/issued/')) {
@@ -106,7 +104,6 @@ export class ClaimComponent implements OnDestroy {
 
     public async fetchMetadata(eventData: EventData) {
         let tokenURI = eventData.uri;
-        console.log(tokenURI);
 
         if (tokenURI.includes('ipfs://')) {
             tokenURI = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');

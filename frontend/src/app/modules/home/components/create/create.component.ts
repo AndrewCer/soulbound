@@ -131,7 +131,6 @@ export class CreateComponent implements OnDestroy {
             const ipfsUri = apiResponse.success;
 
             const eventId = nanoid();
-            console.log('eventId: ', eventId);
 
             // Non pre-issued
             if (!this.restricted) {
@@ -159,15 +158,11 @@ export class CreateComponent implements OnDestroy {
             }
             // Pre-issued
             if (this.restricted) {
-                console.log(this.formControl['issueTo'].value);
-
                 let issueToStr = this.formControl['issueTo'].value;
                 // Remove trailing comma if one exists
                 issueToStr = issueToStr.replace(/,*$/, '');
                 // Remove all spaces
                 issueToStr = issueToStr.replace(/\s+/g, '');
-
-                console.log(issueToStr.split(','));
 
                 // Remove duplicates
                 const issueToArr = [...new Set(issueToStr.split(','))] as string[];
@@ -250,7 +245,6 @@ export class CreateComponent implements OnDestroy {
 
         // Typecasting to account for both drack and click events
         let inputElement = (event as DragEvent).dataTransfer ? (event as DragEvent).dataTransfer : (event.target as HTMLInputElement)
-        console.log(event);
 
         this.fileFormData = new FormData();
 

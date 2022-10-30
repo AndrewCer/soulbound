@@ -40,7 +40,6 @@ export class CollectionComponent implements OnDestroy {
         switch (walletStatus) {
             case WalletStatus.connected:
                 const tokenURIs = await this.walletService.getTokenURIs(await this.walletService.getAddress());
-                console.log('URIs: ', tokenURIs);
 
                 tokenURIs.forEach(async (tokenURI) => {
                     if (!tokenURI.includes('https://') && !tokenURI.includes('ipfs://')) {

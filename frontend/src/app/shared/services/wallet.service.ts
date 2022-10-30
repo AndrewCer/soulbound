@@ -34,14 +34,6 @@ export class WalletService {
 
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
         this.contract = new ethers.Contract(this.contractAddress, this.sbtAbi, this.provider);
-
-
-        // window.ethereum.on("disconnect", (event: any) => {
-        //     console.log(event);
-        // });
-        // window.ethereum.on("accountsChanged", (event: any) => {
-
-        // });
     }
 
     public async startup() {
@@ -98,14 +90,11 @@ export class WalletService {
     public async getTokenURIs(address: string): Promise<string[]> {
         const contractFunctions = this.contract.functions;
         const sbtBalance = await contractFunctions['balanceOf'](address);
-        console.log('balance of SBTs: ', sbtBalance.toString());
 
         let tokenURIs: string[] = [];
         for (let i = 0; i < sbtBalance; i++) {
 
             const tokenId = (await contractFunctions['tokenOfOwnerByIndex'](address, i)).toString();
-            console.log('tokenID: ', tokenId);
-
 
             const tokenURI = (await contractFunctions['tokenURI'](tokenId))[0];
             tokenURIs.push(tokenURI);
@@ -117,12 +106,7 @@ export class WalletService {
     public async getEventData(eventId: string): Promise<EventData | undefined> {
         const contractFunctions = this.contract.functions;
 
-        console.log(this.createHash(eventId));
-        
-
         const data = await contractFunctions['createdTokens'](this.createHash(eventId));
-
-        console.log(data);
 
         if (!data.owner) {
             return undefined;
