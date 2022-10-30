@@ -83,6 +83,6 @@ app.get('*', (req, res) => {
 const server = app.listen(PORT, async () => {
     console.log(`Listening on port ${PORT}`);
 
-    // await secretManagerService.init();
+    await secretManagerService.init();
     await mongoConnectionService.connect();
 });

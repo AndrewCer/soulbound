@@ -1,7 +1,7 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
 const client = new SecretManagerServiceClient();
-const parent = 'projects/syfted';
+const parent = 'projects/soulbound-367119';
 
 class SecretManagerService {
 
@@ -24,7 +24,7 @@ class SecretManagerService {
                         name: `${secret.name}/versions/latest`,
                     });
     
-                    const payload = version.payload?.data?.toString();
+                    const payload = version.payload?.data?.toString();                    
                     process.env[envName] = payload;
                 }
             }
