@@ -25,7 +25,7 @@ router.post(
     async (req: express.Request, res: express.Response) => {
         const file = req.file as Express.Multer.File;
 
-        const imageFile = new File([file.buffer], nanoidService.generate() + req.body.name, { type: file.mimetype })
+        const imageFile = new File([file.buffer], nanoidService.generate(), { type: file.mimetype })
         const metaData: any = {
             name: req.body.name,
             description: req.body.description,
