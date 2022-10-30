@@ -1,9 +1,13 @@
 <div class="container d-flex flex-row gap-5" *ngIf="metaData && eventData">
 
+    
     <token [eventData]="eventData" [metaData]="metaData" [invalidClaimAttempt]="invalidClaimAttempt"
-        [currentRoute]="currentRoute"></token>
-
-    <div class="w-100">
+    [currentRoute]="currentRoute"></token>
+    
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center" *ngIf="pageLoading">
+        <img src="assets/img/loader.svg" alt="loader">
+    </div>
+    <div class="w-100" *ngIf="!pageLoading">
         <!-- Non pre-issued token -->
         <ng-container *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
             <div class="text-center">

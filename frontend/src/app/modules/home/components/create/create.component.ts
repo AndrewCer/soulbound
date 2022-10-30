@@ -1,3 +1,4 @@
+import { ViewportScroller } from '@angular/common';
 import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -55,6 +56,7 @@ export class CreateComponent implements OnDestroy {
         private fileRequestService: FileRequestService,
         private formBuilder: FormBuilder,
         private router: Router,
+        private viewScroller: ViewportScroller,
         private walletService: WalletService,
     ) {
         this.baseUrl = this.router['location']._platformLocation.location.origin;
@@ -329,6 +331,8 @@ export class CreateComponent implements OnDestroy {
         this.importantStuff.claimLink = `${this.baseUrl}/claim/${eventId}`;
 
         this.metaData = await this.fetchMetadata(this.eventData);
+
+        this.viewScroller.scrollToPosition([0, 0]);
     }
 
 }

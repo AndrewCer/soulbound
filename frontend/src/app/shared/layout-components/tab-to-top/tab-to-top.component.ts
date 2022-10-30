@@ -9,21 +9,21 @@ import { Component, HostListener, OnInit } from '@angular/core';
 export class TabToTopComponent implements OnInit {
   public show: boolean = false;
 
-  constructor( private viewScroller: ViewportScroller) { }
+  constructor(private viewScroller: ViewportScroller) { }
 
   ngOnInit(): void {
   }
   @HostListener("window:scroll", [])
-  onWindowScroll(){
+  onWindowScroll() {
     let number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    if(number > 400){
+    if (number > 400) {
       this.show = true;
     } else {
       this.show = false;
     }
   }
 
-  taptotop(){
-    this.viewScroller.scrollToPosition([0,0]);
+  taptotop() {
+    this.viewScroller.scrollToPosition([0, 0]);
   }
 }

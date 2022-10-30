@@ -1,7 +1,6 @@
 <div class="sbt-container p-4 rounded shadow-sm" *ngIf="metaData && eventData">
     <div class="image-container rounded shadow-sm">
-        <img #userImage class="rounded" [src]="metaData.image" [alt]="metaData.name">
-        <img *ngIf="!userImage.complete" class="rounded" src="assets/img/placeholder.png" alt="Placeholder image" [matTooltip]="'IPFS can sometimes take a while to process your image.'">
+        <img [defaultImage]="'assets/img/placeholder.png'" [lazyLoad]="metaData.image" />
         <ng-container *ngIf="currentRoute">
             <div class="claimed-overlay" *ngIf="!eventData.restricted && eventData.count >= eventData.limit">
                 <p class="text-danger h4">Claimed</p>

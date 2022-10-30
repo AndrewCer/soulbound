@@ -11,6 +11,7 @@ import { ErrorLayoutComponent } from './layout-components/layout/error-layout/er
 import { FullLayoutComponent } from './layout-components/layout/full-layout/full-layout.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
+import { LazyLoadImageModule } from 'ng-lazyload-image'; 
 import { RightSidebarComponent } from './layout-components/right-sidebar/right-sidebar.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -75,6 +76,7 @@ const modules = [
   PerfectScrollbarModule,
   ReactiveFormsModule,
   RouterModule,
+  LazyLoadImageModule,
 ];
 
 

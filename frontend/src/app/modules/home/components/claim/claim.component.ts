@@ -12,15 +12,16 @@ import { WalletService } from 'src/app/shared/services/wallet.service';
     styleUrls: ['./claim.component.scss'],
 })
 export class ClaimComponent implements OnDestroy {
+    public claimSuccess = false;
     public currentRoute: string = '';
     public eventData: EventData | undefined;
     public eventId: string | null = null;
     public invalidClaimAttempt = false;
     public metaData: SBT | undefined;
+    public pageLoading = true;
     public submitting = false;
     public uniqueCode: string | null = null;
 
-    public claimSuccess = false;
 
     private subscriptionKiller = new Subject();
 
@@ -92,6 +93,8 @@ export class ClaimComponent implements OnDestroy {
 
     public async getEventData(eventId: string) {
         this.eventData = await this.walletService.getEventData(eventId);
+
+        this.pageLoading = false;
 
         if (!this.eventData) {
             return;
