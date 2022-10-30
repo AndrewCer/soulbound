@@ -1,24 +1,53 @@
 .container {
-    height: 85vh;
-    max-height: 800px;
+  height: 85vh;
+  max-height: 800px;
 }
 
 .flavor-text-linear {
-    text-align: center;
-    
-    background: linear-gradient(to right, #43CBFF 20%, #465EFB 40%, #465EFB 60%, #43CBFF 80%);
-    background-size: 200% auto;
-    
-    color: #000;
-    background-clip: text;
-    text-fill-color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    animation: shine 1.5s linear infinite;
-    @keyframes shine {
-      to {
-        background-position: 200% center;
-      }
+  text-align: center;
+  font-size: 50px;
+
+  background: linear-gradient(to right, #43cbff 20%, #465efb 40%, #465efb 60%, #43cbff 80%);
+  background-size: 200% auto;
+
+  color: #000;
+  background-clip: text;
+  text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  animation: shine 1.5s linear infinite;
+  @keyframes shine {
+    to {
+      background-position: 200% center;
     }
   }
+}
+
+@media (max-width: 415px) {
+  .card {
+    padding: 0;
+  }
+}
+
+@media (max-width: 755px) {
+  token {
+    display: flex;
+    justify-content: center;
+  }
+
+  .media-hidden {
+    display: none;
+  }
+
+  .container {
+    padding: 0;
+    height: unset;
+    max-height: unset;
+    flex-direction: column;
+  }
+
+  .gap-5-dynamic {
+    gap: 1rem;
+  }
+}

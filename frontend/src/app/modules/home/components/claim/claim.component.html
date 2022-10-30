@@ -1,4 +1,4 @@
-<div class="container d-flex flex-row gap-5" *ngIf="metaData && eventData">
+<div class="container d-flex gap-5-dynamic" *ngIf="metaData && eventData">
 
     
     <token [eventData]="eventData" [metaData]="metaData" [invalidClaimAttempt]="invalidClaimAttempt"
@@ -19,8 +19,8 @@
         </ng-container>
         <ng-container *ngIf="!eventData.restricted && eventData.count < eventData.limit">
             <div class="text-center">
-                <p class="display-4">Congratulations!<br> You received:</p>
-                <p style="font-size: 50px;" class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
+                <p class="display-4 media-hidden">Congratulations!<br> You received:</p>
+                <p class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
                 <p *ngIf="eventData.limit" class="display-6 font-weight-bold"> {{eventData.count +
                     1}}/{{eventData.limit}}</p>
                 <button type="submit" class="btn rounded-button ripple btn-primary btn-block mt-4 font-weight-bold"
@@ -41,7 +41,7 @@
         <!-- Pre-issued token -->
         <ng-container *ngIf="invalidClaimAttempt || (eventData.restricted && !currentRoute.includes('/issued/'))">
             <div class="text-center">
-                <p class="display-5">🔒 This is a restricted token 🔒</p>
+                <p class="display-5">🔒 Restricted token 🔒</p>
                 <p>Verify that you have a valid link or reach out to the event owner <span
                         matTooltip="{{eventData.owner}}">{{stringFormatterService.truncateAddress(eventData.owner)}}</span>
                     and get one issued to you!</p>
@@ -52,7 +52,7 @@
         </ng-container>
         <ng-container *ngIf="!invalidClaimAttempt && (eventData.restricted && currentRoute.includes('/issued/'))">
             <div class="text-center">
-                <p class="display-4">Congratulations!<br> You received:</p>
+                <p class="display-4 media-hidden">Congratulations!<br> You received:</p>
                 <p style="font-size: 50px;" class="flavor-text-linear font-weight-bold">{{metaData.name}}</p>
                 <button type="submit" class="btn rounded-button ripple btn-primary btn-block mt-4 font-weight-bold"
                     [disabled]="submitting" (click)="claimIssuedToken()" *ngIf="!claimSuccess">

@@ -63,6 +63,17 @@ export class CreateComponent implements OnDestroy {
 
         this.form = this.setupForm();
 
+
+        this.eventData = {
+            burnAuth: 0,
+            count: 0,
+            limit: 0,
+            owner: '0x70a2d674cF9F503ac3cb45915Be248961128EF5f',
+            restricted: true,
+            uri: 'ipfs://bafyreicy4saa53inhf724isc2fqrarn3nbvh7jjfbbawggrddmsap7fxia/metadata.json'
+        }
+        this.fetchMetadata(this.eventData);
+
     }
 
     ngOnDestroy() {
@@ -269,6 +280,8 @@ export class CreateComponent implements OnDestroy {
             console.log(metaData);
             console.log(this.eventData);
         }
+
+        this.metaData = metaData;
 
         return metaData;
     }

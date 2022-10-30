@@ -3,7 +3,45 @@
     max-height: 800px;
 }
 
-
 .custom-controls-stacked {
     grid-gap: 12px;
+}
+
+@media (max-width: 415px) {
+    .card {
+        padding: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .radio-container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 700px) {
+    .container {
+        padding: 0;
+    }
+}
+
+@media (max-width: 755px) {
+    token {
+        display: flex;
+        justify-content: center;
+    }
+
+    .media-hidden {
+        display: none;
+    }
+
+    .container {
+        height: unset;
+        max-height: unset;
+        flex-direction: column;
+    }
+
+    .gap-5-dynamic {
+        gap: 1rem;
+    }
 }

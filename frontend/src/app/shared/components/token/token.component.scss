@@ -4,16 +4,13 @@
 
     height: 100%;
 
-    background-color: #C2FFD8;
-    background-image: linear-gradient(304deg, #C2FFD8 10%, #465EFB 100%);
+    background-color: #c2ffd8;
+    background-image: linear-gradient(304deg, #c2ffd8 10%, #465efb 100%);
 }
 
 .image-container {
     position: relative;
     background-color: #fff;
-    
-    height: 300px;
-    width: 300px;
 }
 
 .claimed-overlay {
@@ -29,4 +26,16 @@
 
 .claimed-overlay p {
     transform: rotate(327deg);
+}
+
+@media (max-width: 755px) {
+    .card-flyer {
+        max-width: 300px;
+    }
+    .sbt-container {
+        max-width: 300px;
+    }
+    .image-container {
+        max-width: 300px;
+    }
 }

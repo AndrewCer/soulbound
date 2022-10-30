@@ -1,4 +1,4 @@
-<div class="container sbt-container d-flex flex-row gap-5" *ngIf="eventData && metaData">
+<div class="container sbt-container d-flex gap-5-dynamic" *ngIf="eventData && metaData">
     <ng-container>
         <token [eventData]="eventData" [metaData]="metaData"></token>
     </ng-container>
@@ -95,14 +95,14 @@
                                     </label>
                                 </div>
                                 <div class="col-lg-12 form-group">
-                                    <label class="form-label">Burn Authorization: <span class="tx-danger">*</span>
+                                    <label class="form-label mb-3">Burn Authorization: <span class="tx-danger">*</span>
                                         <span class="custom-switch-description ms-2">
                                             <mat-icon class="text-muted help-icon"
                                                 matTooltip="Choose who can revoke/destory this token once it has been claimed.">
                                                 help</mat-icon>
                                         </span>
                                     </label>
-                                    <div class="custom-controls-stacked d-flex">
+                                    <div class="custom-controls-stacked d-flex radio-container">
                                         <div class="form-check form-check-inline">
                                             <label class="custom-control custom-radio custom-control-md">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"

@@ -93,7 +93,8 @@ export class ClaimComponent implements OnDestroy {
 
     public async getEventData(eventId: string) {
         this.eventData = await this.walletService.getEventData(eventId);
-
+        console.log(this.eventData);
+        
         this.pageLoading = false;
 
         if (!this.eventData) {
