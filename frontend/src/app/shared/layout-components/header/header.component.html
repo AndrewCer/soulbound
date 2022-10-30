@@ -34,6 +34,17 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent-4" #collapse="ngbCollapse"
           [(ngbCollapse)]="isCollapsed">
           <ul class="nav nav-item header-icons navbar-nav-right ms-md-auto ms-3 flex-nowrap">
+            <ng-container *ngIf="!isCollapsed">
+              <li ngbDropdown class="nav-item" [ngClass]="{'text-muted': currentRoute !== '/collection'}">
+                <button mat-button routerLink="/collection">Collection</button>
+              </li>
+              <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': currentRoute !== '/create'}">
+                <button mat-button routerLink="/create" [routerLink]="'/create'">Create</button>
+              </li>
+              <li ngbDropdown class="nav-item text-muted" [ngClass]="{'text-muted': !currentRoute.includes('/claim')}">
+                <button mat-button routerLink="/claim">Claim</button>
+              </li>
+            </ng-container>
             <!-- Light/Dark Theme Toggle -->
             <!-- TODO(nocs): light/dark toggle -->
             <!-- <li ngbDropdown class="nav-item">
@@ -51,8 +62,10 @@
               </a>
             </li> -->
             <li>
-              <button mat-button color="primary" *ngIf="walletAddress">{{stringFormatterService.truncateAddress(walletAddress)}}</button>
-              <button mat-button color="primary" (click)="connectClicked()" *ngIf="!walletAddress">Connect <mat-icon>account_balance_wallet</mat-icon></button>
+              <button mat-button color="primary"
+                *ngIf="walletAddress">{{stringFormatterService.truncateAddress(walletAddress)}}</button>
+              <button mat-button color="primary" (click)="connectClicked()" *ngIf="!walletAddress">Connect <mat-icon>
+                  account_balance_wallet</mat-icon></button>
             </li>
             <!-- <li ngbDropdown class="main-profile-menu nav nav-item nav-link ps-lg-2">
               <a class="new nav-link profile-user d-flex" href="javascript:;" ngbDropdownToggle>
