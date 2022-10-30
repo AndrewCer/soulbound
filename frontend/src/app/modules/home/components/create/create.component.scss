@@ -1,6 +1,13 @@
-.sbt-container {
-    height: 85vh;
-    max-height: 800px;
+.card-body {
+    padding-top: 0;
+}
+
+.gap-1-rem {
+    gap: 1rem;
+}
+
+.token-wrapper {
+    max-width: 300px;
 }
 
 .custom-controls-stacked {
@@ -25,8 +32,9 @@
     }
 }
 
-@media (max-width: 755px) {
-    token {
+@media (max-width: 936px) {
+
+    .token-container {
         display: flex;
         justify-content: center;
     }

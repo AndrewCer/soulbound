@@ -1,11 +1,14 @@
-<div class="container sbt-container d-flex gap-5-dynamic" *ngIf="eventData && metaData">
-    <ng-container>
-        <token [eventData]="eventData" [metaData]="metaData"></token>
-    </ng-container>
+<div class="container sbt-container d-flex d-flex gap-1-rem" *ngIf="eventData">
+    <div class="token-container">
+        <div class="token-wrapper">
+            <token [imageUrl]="imgUrl" [previewOnly]="true" [name]="formControl['name'].value || 'Name'"
+                [description]="formControl['description'].value || 'Description'"></token>
+        </div>
+    </div>
     <div class="w-100">
         <div class="row row-sm h-100">
             <div class="col-lg-12 col-md-12 h-100">
-                <div class="card custom-card h-100 overflow-auto">
+                <div class="custom-card h-100 overflow-auto">
                     <div class="card-body h-100">
                         <p class="display-6 font-weight-bold">Created!</p>
                         <h5>Important stuff</h5>
@@ -36,32 +39,18 @@
     </div>
 </div>
 
-<div class="container" *ngIf="!eventData && !metaData">
-    <h1>Create SBT</h1>
+<div class="container sbt-container d-flex gap-1-rem" *ngIf="!eventData && !metaData">
+    <!-- Display token -->
+    <div class="token-container">
+        <token [imageUrl]="imgUrl" [previewOnly]="true" [name]="formControl['name'].value || 'Name'"
+            [description]="formControl['description'].value || 'Description'"></token>
+    </div>
 
-    <!-- <div class="row justify-content-center gap-4 mt-4">
-        <div class="card action-card" style="width: 18rem;">
-            <i class='bx bxs-pencil' style="font-size: 100px;"></i>
-            <div class="card-body">
-                <h5 class="card-title">SBT Wizard</h5>
-                <p class="card-text">Upload image, add attributes and create your SBT!</p>
-            </div>
-        </div>
-
-        <div class="card" style="width: 18rem;cursor: not-allowed;">
-            <i class='bx bxs-file' style="font-size: 100px;"></i>
-            <div class="card-body">
-                <h5 class="card-title">json file upload</h5>
-                <p class="card-text">Coming soon!</p>
-            </div>
-        </div>
-    </div> -->
-
+    <!-- Form -->
     <div class="row row-sm">
         <div class="col-lg-12 col-md-12">
-            <div class="card custom-card">
+            <div class="custom-card">
                 <div class="card-body">
-                    <!-- TODO(nocs): take this form out of the card when on mobile -->
                     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
                         <div class="">
                             <div class="row row-sm">
@@ -69,14 +58,13 @@
                                     <label class="form-label">Upload Image: <span class="tx-danger">*</span>
                                     </label>
                                     <div class="row justify-content-center">
-                                        <img [src]="imgURL" height="200" *ngIf="imgURL">
-                                        <button class="absolute-close" *ngIf="imgURL" mat-icon-button
-                                            aria-label="Re-select image" matTooltip="Pick again"
-                                            (click)="imgURL = undefined">
+                                        <button class="absolute-close" *ngIf="imgUrl" mat-icon-button
+                                            aria-label="Re-select image" matTooltip="Pick new image"
+                                            (click)="imgUrl = undefined">
                                             <mat-icon>close</mat-icon>
                                         </button>
                                     </div>
-                                    <file-upload *ngIf="!imgURL" (fileSelected)="onImageSelected($event)">
+                                    <file-upload *ngIf="!imgUrl" (fileSelected)="onImageSelected($event)">
                                     </file-upload>
                                 </div>
                                 <div class="col-lg-12 form-group">
@@ -85,9 +73,13 @@
                                             [attr.disabled]="submitting ? true : null"
                                             [ngClass]="{'has-success': formControl['name'].valid}">
                                     </label>
+                                    <p *ngIf="formControl['name'].invalid && !formControl['name'].pristine"
+                                        class="tx-danger">
+                                        Required
+                                    </p>
                                 </div>
                                 <div class="col-lg-12 form-group">
-                                    <label class="form-label">Description: <span class="tx-danger">*</span>
+                                    <label class="form-label">Description:
                                         <textarea class="form-control col-xl-12 col-lg-12 col-md-12 col-xs-12"
                                             placeholder="Detailed description about your SBT"
                                             formControlName="description" [attr.disabled]="submitting ? true : null"
@@ -104,52 +96,52 @@
                                     </label>
                                     <div class="custom-controls-stacked d-flex radio-container">
                                         <div class="form-check form-check-inline">
-                                            <label class="custom-control custom-radio custom-control-md">
+                                            <label class="custom-control custom-radio custom-control">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"
                                                     value="0" formControlName="burnAuth">
                                                 <span
-                                                    class="custom-control-label custom-control-label-md  tx-17">Issuer</span>
+                                                    class="custom-control-label custom-control-label tx-15">Issuer</span>
                                             </label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="custom-control custom-radio custom-control-md">
+                                            <label class="custom-control custom-radio custom-control">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"
                                                     value="1" formControlName="burnAuth">
                                                 <span
-                                                    class="custom-control-label custom-control-label-md  tx-17">Claimer</span>
+                                                    class="custom-control-label custom-control-label tx-15">Claimer</span>
                                             </label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="custom-control custom-radio custom-control-md">
+                                            <label class="custom-control custom-radio custom-control">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"
                                                     value="2" formControlName="burnAuth">
-                                                <span class="custom-control-label custom-control-label-md  tx-17">Issuer
+                                                <span class="custom-control-label custom-control-label tx-15">Issuer
                                                     & Claimer</span>
                                             </label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <label class="custom-control custom-radio custom-control-md">
+                                            <label class="custom-control custom-radio custom-control">
                                                 <input type="radio" class="custom-control-input" name="burnAuth"
                                                     value="3" formControlName="burnAuth">
                                                 <span
-                                                    class="custom-control-label custom-control-label-md  tx-17">Neither</span>
+                                                    class="custom-control-label custom-control-label tx-15">Neither</span>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 form-group">
-                                    <label class="form-label">External link:
+                                    <label class="form-label">Link:
                                         <input class="form-control" formControlName="externalLink"
-                                            placeholder="(optional) Your sites URL"
+                                            placeholder="(optional) External link"
                                             [attr.disabled]="submitting ? true : null"
                                             [ngClass]="{'has-success': formControl['externalLink'].valid}">
                                     </label>
                                 </div>
                                 <div class="col-lg-12 form-group">
                                     <label class="custom-switch form-switch mb-0 p-0">
-                                        <span class="custom-switch-description  tx-17 me-2">Restricted: </span>
+                                        <span class="custom-switch-description  tx-15 me-2">Restricted: </span>
                                         <input type="checkbox" name="custom-switch-radio" class="custom-switch-input"
-                                            [checked]="restricted" (change)="restricted = !restricted">
+                                            [checked]="restricted" (change)="setToggleValidators(true)">
                                         <span class="custom-switch-indicator custom-switch-indicator-lg"></span>
                                         <span class="custom-switch-description ms-2">
                                             <mat-icon class="text-muted help-icon"
@@ -161,11 +153,15 @@
 
                                 <div class="col-lg-12 form-group" *ngIf="restricted">
                                     <label class="form-label">Issue to: <span class="tx-danger">*</span>
-                                        <input class="form-control" formControlName="issueTo"
+                                        <textarea class="form-control col-xl-12 col-lg-12 col-md-12 col-xs-12"
                                             placeholder="Comma separated list of wallet addresses and/or emails"
-                                            [attr.disabled]="submitting ? true : null"
-                                            [ngClass]="{'has-success': formControl['issueTo'].valid}">
+                                            formControlName="issueTo" [attr.disabled]="submitting ? true : null"
+                                            [ngClass]="{'has-success': formControl['issueTo'].valid}"></textarea>
                                     </label>
+                                    <p *ngIf="formControl['issueTo'].invalid && !formControl['issueTo'].pristine"
+                                        class="tx-danger">
+                                        Required
+                                    </p>
                                 </div>
 
                                 <div class="col-lg-12 form-group" *ngIf="!restricted">
@@ -180,19 +176,9 @@
                                         Must be 1-10000
                                     </p>
                                 </div>
-                                <!-- TODO(nocs): build out attributes -->
-                                <!-- <div class="row col-lg-12 align-items-center">
-                                    <div>
-                                        <h5>Attributes</h5>
-                                        <p>Traits for adding extra information to your SBT</p>
-                                    </div>
-                                    <div class="col-1">
-                                        <button type="submit" class="btn ripple btn-primary btn-block"
-                                            (click)="openAttributeDialog()">+</button>
-                                    </div>
-                                </div> -->
                             </div>
-                            <button type="submit" class="btn ripple btn-primary btn-block mt-4" [disabled]="submitting">
+                            <button type="submit" class="btn ripple btn-primary btn-block mt-4 rounded-button"
+                                [disabled]="submitting || (form.dirty && (form.invalid || !imgUrl))">
                                 <ng-container *ngIf="!submitting">
                                     Create
                                 </ng-container>
@@ -207,6 +193,8 @@
         </div>
 
     </div>
+    <!-- </div> -->
+
 </div>
 
 

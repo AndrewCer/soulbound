@@ -1,4 +1,22 @@
-<div class="sbt-container p-4 rounded shadow-sm" *ngIf="metaData && eventData">
+<div class="sbt-container p-4 rounded shadow-sm" *ngIf="previewOnly">
+    <div class="image-container rounded shadow-sm">
+        <img class="rounded" *ngIf="imageUrl" [defaultImage]="'assets/img/placeholder.png'" [lazyLoad]="imageUrl" />
+        <img class="rounded" *ngIf="!imageUrl" src="assets/img/placeholder.png" />
+    </div>
+    <div class="card-flyer mt-3 no-hover shadow-sm">
+        <div class="text-box">
+            <div class="text-container" *ngIf="description">
+                <h5 class="card-title">{{name}}</h5>
+                <p>{{stringFormatterService.truncateString(description, 79)}}</p>
+                <p class="text-muted card-footer cursor-pointer" *ngIf="owner" matTooltip="{{owner}}">
+                    <span>Issued by {{stringFormatterService.truncateAddress(owner)}}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sbt-container p-4 rounded shadow-sm" *ngIf="!previewOnly && (metaData && eventData)">
     <div class="image-container rounded shadow-sm">
         <img class="rounded" [defaultImage]="'assets/img/placeholder.png'" [lazyLoad]="metaData.image" />
         <ng-container *ngIf="currentRoute">

@@ -5,7 +5,7 @@
                 <div class="card-flyer hover cursor-pointer">
                     <div class="text-box">
                         <div class="image-box">
-                            <img [src]="token.image" [alt]="token.name">
+                            <img [defaultImage]="'assets/img/placeholder.png'" [lazyLoad]="token.image">
                         </div>
                         <div class="text-container">
                             <h5 class="card-title">{{token.name}}</h5>

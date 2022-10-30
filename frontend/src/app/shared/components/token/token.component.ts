@@ -14,6 +14,14 @@ export class TokenComponent {
     @Input() invalidClaimAttempt: boolean | undefined;
     @Input() currentRoute: string | undefined;
 
+    @Input() previewOnly: boolean = false;
+    @Input() imageUrl: string | undefined;
+    @Input() name: string | undefined;
+    @Input() description: string | undefined;
+
+    public owner = '0x0000000000000000000000000000000000000000';
+
+
     constructor(
         public stringFormatterService: StringFormatterService,
     ) { }

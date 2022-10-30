@@ -117,6 +117,9 @@ export class WalletService {
     public async getEventData(eventId: string): Promise<EventData | undefined> {
         const contractFunctions = this.contract.functions;
 
+        console.log(this.createHash(eventId));
+        
+
         const data = await contractFunctions['createdTokens'](this.createHash(eventId));
 
         console.log(data);

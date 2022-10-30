@@ -1,6 +1,6 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { nanoid } from 'nanoid'
@@ -33,6 +33,7 @@ export class CreateComponent implements OnDestroy {
     public baseUrl = '';
     public dialogRef!: MatDialogRef<any>;
     public fileFormData = new FormData();
+    public imgUrl: string | undefined;
     public importantStuff: ImportantStuff = {};
 
     public eventData: EventData | undefined;
@@ -56,12 +57,13 @@ export class CreateComponent implements OnDestroy {
         private fileRequestService: FileRequestService,
         private formBuilder: FormBuilder,
         private router: Router,
-        private viewScroller: ViewportScroller,
         private walletService: WalletService,
+        private viewScroller: ViewportScroller,
     ) {
         this.baseUrl = this.router['location']._platformLocation.location.origin;
 
         this.form = this.setupForm();
+        this.setToggleValidators();
     }
 
     ngOnDestroy() {
@@ -79,12 +81,34 @@ export class CreateComponent implements OnDestroy {
         ).subscribe(() => { });
     }
 
+    public setToggleValidators(fromToggle?: boolean) {
+        if (fromToggle) {
+            this.restricted = !this.restricted;
+        }
+
+        this.form.removeControl('tokenLimit');
+        this.form.removeControl('issueTo');
+        
+        if (this.restricted) {
+            this.form.addControl('issueTo', new FormControl(null, [Validators.required]));
+        }
+        else {
+            this.form.addControl('tokenLimit', new FormControl(null, [
+                Validators.required,
+                Validators.pattern("^[0-9]*$"),
+                Validators.min(1),
+                Validators.max(10000),
+            ]));
+        }
+    }
+
     public async submit() {
+        if (this.form.invalid) {
+            return;
+        }
+
         this.submitting = true;
 
-        // if (this.form.invalid) {
-        //     return;
-        // }
 
         // construct json file and upload to ipfs
         // upload photo to ipfs
@@ -221,8 +245,9 @@ export class CreateComponent implements OnDestroy {
 
     }
 
-    public imgURL: string | undefined;
     public onImageSelected(event: Event | DragEvent) {
+        this.form.markAsDirty();
+
         // Typecasting to account for both drack and click events
         let inputElement = (event as DragEvent).dataTransfer ? (event as DragEvent).dataTransfer : (event.target as HTMLInputElement)
         console.log(event);
@@ -235,10 +260,10 @@ export class CreateComponent implements OnDestroy {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (_event) => {
-                this.imgURL = reader.result as string;
+                this.imgUrl = reader.result as string;
             }
 
-            this.imgURL = URL.createObjectURL(file);
+            this.imgUrl = URL.createObjectURL(file);
 
             this.fileFormData.append('uploaded-image', file);
         }
@@ -283,37 +308,29 @@ export class CreateComponent implements OnDestroy {
         this.metaData = undefined;
 
         this.form = this.setupForm();
+        this.setToggleValidators();
     }
 
     private setupForm(): FormGroup {
         return this.formBuilder.group({
             name: [null, Validators.compose([
                 Validators.required,
-                Validators.pattern('^([a-zA-Z\s]+)$')
             ])],
-            description: [null, Validators.compose([
-                Validators.required,
-                Validators.pattern('^([0-9]+)$')
-            ])],
-            externalLink: [null, Validators.compose([
-                Validators.required,
-                Validators.pattern('^([0-9]+)$'),
-            ])],
+            description: [null],
+            externalLink: [null],
             burnAuth: ['2', Validators.compose([
                 Validators.required,
-                Validators.pattern('^([0-9]+)$'),
             ])],
             // Non-restricted
             tokenLimit: [null, Validators.compose([
                 Validators.required,
                 Validators.pattern("^[0-9]*$"),
-                Validators.minLength(1),
-                // TOOD(nocs): validator to restrict this to 10,000 and below
+                Validators.min(1),
+                Validators.max(10000),
             ])],
             // Restricted
             issueTo: [null, Validators.compose([
                 Validators.required,
-                Validators.pattern('^([0-9]+)$')
             ])],
         });
     }
